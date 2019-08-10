@@ -1,0 +1,21 @@
+{
+  "root": "/var/www/luka.example.com/data",
+  "port": "8080",
+  "serverUri": "https://luka.example.com",
+  "webid": true,
+  "mount": "/",
+  "configPath": "/var/www/luka.example.com/config",
+  "configFile": "/var/www/luka.example.com/config.json",
+  "dbPath": "/var/www/luka.example.com/.db",
+  "sslKey": "/home/luka/certificates/luka.example.com/key.pem",
+  "sslCert": "/home/luka/certificates/luka.example.com/cert.pem",
+  "multiuser": true,
+  "enforceToc": false,
+  "disablePasswordChecks": true,
+  "supportEmail": "",
+  "server": {
+    "name": "luka.example.com",
+    "description": "",
+    "logo": ""
+  }
+}

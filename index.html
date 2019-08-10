@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Prototip Solid aplikacije</title>
+    <link rel="stylesheet" href="/common/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/common/css/solid.css">
+    <link rel="stylesheet" href="static/css/main.css">
+</head>
+<body>
+
+<div class="container">
+    <div class="page-header">
+        <div class="pull-right">
+            <a class="p-2 text-dark" href="doctor">Zdravnik</a>
+            <a class="p-2 text-dark" href="patient">Pacient</a>
+            <button id="register" type="button" class="btn btn-primary">Registracija</button>
+            <button id="login" type="button" class="hidden btn btn-default btn-success">Prijava</button>
+            <button id="logout" type="button" class="hidden btn btn-danger">Odjava</button>
+        </div>
+
+        <h1>Prototip porazdeljene Solid aplikacije</h1>
+    </div>
+
+    <p class="lead">
+        This is a prototype implementation of a Solid server.
+        It is a fully functional server, but there are no security or stability guarantees.
+        If you have not already done so, please create an account.
+    </p>
+
+    <p class="lead hidden" id="loggedIn">
+        Prijavljeni ste kot:
+        <a href="#" id="profileLink"></a>.
+    </p>
+
+    <section>
+        <h2>Profil</h2>
+        <p>
+            You are logged in as <span id="user"></span>.
+        </p>
+
+        <div class="row">
+            <div class="col-xs-12">
+                <label for="profile">Profile:</label>
+                <input id="profile">
+                <button id="view">View</button>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-xs-12">
+                <strong>Full name</strong>
+                <div class="d-inline" id="fullName"></div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-xs-12">
+                <strong>Friends</strong>
+                <ul id="friends"></ul>
+            </div>
+        </div>
+    </section>
+
+    <section>
+        <h2>Server info</h2>
+        <dl>
+            <strong>Name:</strong> localhost<br />
+            <strong>Running on:</strong> <a href="https://www.w3.org/community/solid/wiki/">Solid 5.1.6</a>
+        </dl>
+    </section>
+</div>
+<script src="static/js/jquery.js"></script>
+<script src="/common/js/solid-auth-client.bundle.js"></script>
+<script src="/common/js/auth-buttons.js"></script>
+<script src="static/js/rdflib.min.js"></script>
+<script src="static/js/main.js"></script>
+</body>
+</html>

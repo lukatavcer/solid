@@ -14,7 +14,7 @@
   },
   "scripts": {
     "start": "node index",
-    "dev": "DEBUG=\"solid:*\" nodemon dev"
+    "dev": "DEBUG=\"solid:*\" nodemon dev --no-reject-unauthorized"
   },
   "author": "",
   "license": "ISC"

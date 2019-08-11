@@ -17,9 +17,7 @@ keyUsage = critical, digitalSignature, keyAgreement
 extendedKeyUsage = serverAuth
 subjectAltName = @alt_names
 [alt_names]
-DNS.1 = lukatavcer
-DNS.2 = lukatavcer.solid.community
-DNS.3 = solid.community
+DNS = lukatavcer
 ```
 
 - Create cert

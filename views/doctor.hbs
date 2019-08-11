@@ -1,21 +1,35 @@
+<div class="container">
+    <div class="row">
+        <div class="col-xs-12">
+            <button type="button" class="btn btn-primary" id="btn-data">Naloži podatke</button>
+        </div>
+    </div>
 
-DOCTORS
+    Pacienti:
+    <ul>
+    {{#each patients as |patient key|}}
+        <li>{{patient}}</li>
+    {{/each}}
+    </ul>
 
-Pacienti:
-<ul>
-{{#each patients as |patient key|}}
-    <li>{{patient}}</li>
-{{/each}}
-</ul>
+    <br />
+    {{ lookup patients 0 }}
+    <hr>
 
-<br />
-<hr>
-{{ lookup patients 0 }}
+    <div class="row">
+        <div class="content center-text hidden" id="view">
+            <h1 id="view-title"></h1>
+            <br>
+            <div id="view-body"></div>
+        </div>
 
-<div>
-    SESSION:
-    {{#with session}}
-        {{data }}
-    {{/with}}
-
+        <div class="content center-text hidden" id="edit">
+            <input type="text" id="edit-title" class="block" placeholder="Title...">
+            <br>
+            <textarea id="edit-body" class="block" placeholder="Paste text here..."></textarea>
+            <br>
+            <button id="submit" class="btn">Publish</button>
+        </div>
+    </div>
 </div>
+

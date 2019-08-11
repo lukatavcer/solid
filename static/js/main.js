@@ -1,49 +1,305 @@
 const FOAF = $rdf.Namespace('http://xmlns.com/foaf/0.1/');
+const ROOT_NAME = 'example.com';
+const PORT = '8443';
+const ROOT_URL = 'https://' + ROOT_NAME + ':' + PORT;
+const BIN_PATH = 'https://lukatavcer.example.com:8443/med-app/records/';
 
 // Update components to match the user's login status
 solid.auth.trackSession(session => {
-  const loggedIn = !!session;
-  $('#login').toggle(!loggedIn);
-  $('#logout').toggle(loggedIn);
-  const $userUrl = $('#user');
-  if (loggedIn) {
-    $('#loggedIn').toggle(true);
-    $userUrl.text(session.webId);
-    $userUrl.attr('href', session.webId);
+    let loggedIn = !!session;
+    $('#login').toggle(!loggedIn);
+    $('#logout').toggle(loggedIn);
+    const $userUrl = $('#user');
+    if (loggedIn) {
+        $('#loggedIn').toggle(true);
+        $userUrl.text(session.webId);
+        $userUrl.attr('href', session.webId);
 
-    // Use the user's WebID as default profile
-    const $profile = $('#profile');
-    if (!$profile.val()) {
-      $profile.val(session.webId);
+        // Use the user's WebID as default profile
+        const $profile = $('#profile');
+        if (!$profile.val()) {
+            $profile.val(session.webId);
+        }
+    } else {
+        $('#loggedIn').toggle(false);
     }
-  } else {
-    $('#loggedIn').toggle(false);
-  }
 });
 
 $('#view').click(async function loadProfile() {
-  // Set up a local data store and associated data fetcher
-  const store = $rdf.graph();
-  const fetcher = new $rdf.Fetcher(store);
+    // Set up a local data store and associated data fetcher
+    const store = $rdf.graph();
+    const fetcher = new $rdf.Fetcher(store);
 
-  // Load the person's data into the store
-  const person = $('#profile').val();
-  await fetcher.load(person);
+    // Load the person's data into the store
+    const person = $('#profile').val();
+    await fetcher.load(person);
 
-  // Display their details
-  const fullName = store.any($rdf.sym(person), FOAF('name'));
-  $('#fullName').text(fullName && fullName.value);
+    // Display their details
+    const fullName = store.any($rdf.sym(person), FOAF('name'));
+    $('#fullName').text(fullName && fullName.value);
 
-  // Display their friends
-  const friends = store.each($rdf.sym(person), FOAF('knows'));
-  $('#friends').empty();
-  friends.forEach(async (friend) => {
-    await fetcher.load(friend);
-    const fullName = store.any(friend, FOAF('name'));
-    $('#friends').append(
-      $('<li>').append(
-        $('<a>').text(fullName && fullName.value || friend.value)
-                .click(() => $('#profile').val(friend.value))
-                .click(loadProfile)));
-  });
+    // Display their friends
+    const friends = store.each($rdf.sym(person), FOAF('knows'));
+    $('#friends').empty();
+    friends.forEach(async (friend) => {
+        await fetcher.load(friend);
+        const fullName = store.any(friend, FOAF('name'));
+        $('#friends').append(
+            $('<li>').append(
+                $('<a>').text(fullName && fullName.value || friend.value)
+                    .click(() => $('#profile').val(friend.value))
+                    .click(loadProfile)));
+    });
 });
+
+$('#btn-data').click(async function () {
+    const session = await solid.auth.currentSession();
+    if (!session)
+        alert('Hello stranger!');
+    else
+        alert(`Hello ${session.webId}!`);
+});
+
+fetchFriends = async () => {
+    console.log('Fetching Friends')
+};
+
+addFriend = async (webId) => {
+    console.log(`Adding ${webId}`);
+};
+
+removeFriend = async (webId) => {
+    console.log(`Removing ${webId}`);
+};
+
+const solidClient = SolidClient;
+const vocab = solidClient.vocab;
+
+Pastebin = (function () {
+    // Default publish location
+    // 'https://lukatavcer.example.com:8443/med-app/records/'
+    let defaultContainer = BIN_PATH;
+    let WebId = 'https://lukatavcer.example.com:8443/';
+    let medAppContainer = WebId + 'med-app/';
+    let recordsContainer = medAppContainer + 'records/';
+
+    // Bin structure
+    let bin = {
+        url: '',
+        title: '',
+        body: ''
+    };
+    let appExists = true;
+    let dirExists = true;
+
+    async function init() {
+        // $('#edit').addClass('hidden');
+        // $('#view').addClass('hidden');
+        const session = await solid.auth.currentSession();
+        if (session) {
+            console.log(defaultContainer);
+
+            containerExists(medAppContainer).then(function(exists) {
+                if (!exists) {
+                    createContainer(WebId, "med-app");
+                }
+                containerExists(recordsContainer).then(function(exists) {
+                    if (!exists) {
+                        createContainer(medAppContainer, "records");
+                    }
+                });
+            });
+
+
+            if (queryVals['view'] && queryVals['view'].length > 0) {
+                load(queryVals['view']);
+            } else if (queryVals['edit'] && queryVals['edit'].length > 0) {
+                load(queryVals['edit'], true);
+            } else {
+                console.log('new pastebin form');
+                document.getElementById('submit')
+                    .setAttribute('onclick', 'Pastebin.publish()');
+                document.getElementById('edit').classList.remove('hidden');
+            }
+        }
+    }
+
+    function initApp() {
+        solidClient.login()
+            .then(function (webId) {
+                return solidClient.getProfile(webId)
+            })
+            .then(function (profile) {
+                return profile.loadAppRegistry()
+            })
+            .then(function (profile) {
+                // The profile has been updated, app registry loaded. Now you can register
+                // apps with is.
+                let options = {
+                    name: 'Contact Manager',
+                    shortdesc: 'A reference contact manager',
+                    redirectTemplateUri: 'https://solid.github.io/contacts/?uri={uri}'
+                };
+                let typesForApp = [ vocab.vcard('AddressBook') ];
+                let isListed = true;
+                let app = new AppRegistration(options, typesForApp, isListed);
+                return profile.registerApp(app)
+            })
+            .then(function (profile) {
+                // The app entry was created. You can now query the registry for it
+                return profile.appsForType(vocab.vcard('AddressBook'))
+            })
+            .then(function (registrationResults) {
+                var app = registrationResults[0];
+                app.name  // -> 'Contact Manager'
+                app.shortdesc  // -> ...
+                app.redirectTemplateUri
+            })
+    }
+
+    function load(url, showEditor) {
+        solidClient.web.get(url).then(function (response) {
+            var graph = response.parsedGraph();
+            // set url
+            bin.url = response.url;
+            var subject = $rdf.sym(response.url);
+            // add title
+            var title = graph.any(subject, vocab.dct('title'));
+            if (title) {
+                bin.title = title.value;
+            }
+            // add body
+            var body = graph.any(subject, vocab.sioc('content'));
+            if (body) {
+                bin.body = body.value;
+            }
+
+            if (showEditor) {
+                document.getElementById('edit-title').value = bin.title;
+                document.getElementById('edit-body').innerHTML = bin.body;
+                document.getElementById('submit').setAttribute('onclick',
+                    'Pastebin.update()');
+                document.getElementById('edit').classList.remove('hidden');
+            } else {
+                document.getElementById('view-title').innerHTML = bin.title;
+                document.getElementById('view-body').innerHTML = bin.body;
+                document.getElementById('view').classList.remove('hidden');
+            }
+        }).catch(function (err) {
+            // do something with the error
+            console.log(err);
+        });
+    }
+
+    function publish() {
+        bin.title = $('#edit-title').val();
+        bin.body = $('#edit-body').val();
+
+        let store = $rdf.graph();
+        let thisResource = $rdf.sym(defaultContainer);
+        store.add(thisResource, vocab.dct('title'), $rdf.lit(bin.title));  // A name given to the resource.
+        store.add(thisResource, vocab.sioc('content'), $rdf.lit(bin.body));  // The content of the Item in plain text format.
+        let data = new $rdf.Serializer(store).toN3(store);
+
+        solidClient.web.post(defaultContainer, data, 'med_record', true).then(function (meta) {
+            // view
+            let url = meta.url;
+            console.log("Url to publish: " + url);
+            if (url && url.slice(0, 4) != 'http') {
+                if (url.indexOf('/') === 0) {
+                    url = url.slice(1, url.length);
+                }
+                url = defaultContainer + url.slice(url.lastIndexOf('/') + 1, url.length);
+            }
+            // window.location.search = "?view=" + encodeURIComponent(url);
+        }).catch(function (err) {
+            // do something with the error
+            console.log(err);
+        });
+
+        solid.auth.fetch(defaultContainer, {
+            method: 'POST', // or 'PUT'
+            headers:{
+                'Content-Type': 'text/turtle',
+                'Link': '<http://www.w3.org/ns/ldp#BasicContainer>; rel="type"',
+                'Slug':  'logbook'
+            }
+        }).then((res) => {return res;})
+            .then((response) => {callback(null);})
+            .catch((error) => {callback('Error: '+JSON.stringify(error));});
+    }
+
+    function update() {
+        bin.title = document.getElementById('edit-title').value;
+        bin.body = document.getElementById('edit-body').value;
+
+        var graph = $rdf.graph();
+        var thisResource = $rdf.sym('');
+        graph.add(thisResource, vocab.dct('title'), bin.title);
+        graph.add(thisResource, vocab.sioc('content'), bin.body);
+        var data = new $rdf.Serializer(graph).toN3(graph);
+
+        solidClient.web.put(bin.url, data).then(function (meta) {
+            // view
+            window.location.search = "?view=" + encodeURIComponent(meta.url);
+        }).catch(function (err) {
+            // do something with the error
+            console.log(err);
+        });
+    }
+
+    // Utility function to parse URL query string values
+    var queryVals = (function (a) {
+        if (a === "") return {};
+        var b = {};
+        for (var i = 0; i < a.length; ++i) {
+            var p = a[i].split('=', 2);
+            if (p.length === 1)
+                b[p[0]] = "";
+            else
+                b[p[0]] = decodeURIComponent(p[1].replace(/\+/g, " "));
+        }
+        return b;
+    })(window.location.search.substr(1).split('&'));
+
+    init();
+
+    // return public functions
+    return {
+        publish: publish,
+        update: update
+    };
+}(this));
+
+
+function createContainer(parentUrl, containerName) {
+    let options = '';
+    let data = '<#this> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://rdfs.org/sioc/ns#Blog> .';
+    let metadata =  `<#${containerName}> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://rdfs.org/sioc/ns#Blog> .`;
+
+    solidClient.web.createContainer(parentUrl, containerName, options, metadata).then(
+        function(solidResponse) {
+            // console.log(solidResponse)
+            // The resulting object has several useful properties.
+            // See lib/solid/response.js for details
+            // solidResponse.url - value of the Location header
+            // solidResponse.acl - url of acl resource
+            // solidResponse.meta - url of meta resource
+        }
+    ).catch(function(err){
+        console.log(err) // error object
+    })
+}
+
+async function containerExists(url) {
+    let exists = true;
+
+    await solidClient.web.get(url).then(function (response) {
+        console.log(response);
+    }).catch(function (err) {
+        if (err.code === 404)
+            exists = false;
+    });
+    // console.log("done " + exists);
+    return exists;
+}

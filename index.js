@@ -9,6 +9,7 @@ const logger = logging.logger;
 const https = require('https');
 const hbs = require('express-handlebars');
 
+// Ignore error if self signed certificate
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = 0;
 
 
@@ -20,7 +21,7 @@ app.use(logging.expressWinston);
 
 // Static files
 app.use("/static", express.static('static'));
-// app.use(express.static(__dirname));
+app.use(express.static(__dirname));
 
 // Set handlebars template engine
 app.engine('.hbs', hbs({
@@ -35,7 +36,7 @@ app.set('view engine', '.hbs');
 // My routes
 // **************************************
 app.get('/doctor', function (req, res) {
-    logger.info("doctor");
+    logger.info(req);
     let context = {
         patients: [
             'Luka',

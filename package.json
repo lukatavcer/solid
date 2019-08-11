@@ -5,16 +5,17 @@
   "main": "index.js",
   "dependencies": {
     "express": "^4.17.1",
+    "express-winston": "^3.3.0",
+    "solid-client": "^0.24.3",
     "solid-server": "^5.1.6",
-    "winston": "^3.2.1",
-    "express-winston": "^3.3.0"
+    "winston": "^3.2.1"
   },
   "devDependencies": {
     "nodemon": "^1.19.1"
   },
   "scripts": {
     "start": "node index",
-    "dev": "DEBUG=\"solid:*\" nodemon dev --no-reject-unauthorized"
+    "dev": "DEBUG=\"solid:*\" nodemon dev"
   },
   "author": "",
   "license": "ISC"

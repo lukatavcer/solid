@@ -294,9 +294,7 @@ function createContainer(parentUrl, containerName) {
 async function containerExists(url) {
     let exists = true;
 
-    await solidClient.web.get(url).then(function (response) {
-        console.log(response);
-    }).catch(function (err) {
+    await solidClient.web.get(url).catch(function (err) {
         if (err.code === 404)
             exists = false;
     });

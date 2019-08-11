@@ -6,15 +6,15 @@
   <title>Prototip Solid aplikacije</title>
   <link rel="stylesheet" href="/common/css/bootstrap.min.css">
   <link rel="stylesheet" href="/common/css/solid.css">
-  <link rel="stylesheet" href="static/css/main.css">
+  <link rel="stylesheet" href="/static/css/main.css">
 </head>
 <body>
 
 <div class="container">
   <div class="page-header">
     <div class="pull-right">
-      <a class="p-2 text-dark" href="doctor">Zdravnik</a>
-      <a class="p-2 text-dark" href="patient">Pacient</a>
+      <a class="p-2 text-dark" href="/doctor">Zdravnik</a>
+      <a class="p-2 text-dark" href="/patient">Pacient</a>
       <button id="register" type="button" class="btn btn-primary">Registracija</button>
       <button id="login" type="button" class="hidden btn btn-default btn-success">Prijava</button>
       <button id="logout" type="button" class="hidden btn btn-danger">Odjava</button>
@@ -29,15 +29,11 @@
     If you have not already done so, please create an account.
   </p>
 
-  <p class="lead hidden" id="loggedIn">
-    Prijavljeni ste kot:
-    <a href="#" id="profileLink"></a>.
-  </p>
-
   <section>
     <h2>Profil</h2>
-    <p>
-      You are logged in as <span id="user"></span>.
+    <p class="lead" id="loggedIn" style="display: none;">
+      You are logged in asa
+      <a href="#" id="user" target="_blank"></a>.
     </p>
 
     <div class="row">
@@ -66,15 +62,15 @@
   <section>
     <h2>Server info</h2>
     <dl>
-      <strong>Name:</strong> localhost<br />
-      <strong>Running on:</strong> <a href="https://www.w3.org/community/solid/wiki/">Solid 5.1.6</a>
+      <strong>Ime:</strong> example.com<br />
+      <strong>Platforma:</strong> <a href="https://www.w3.org/community/solid/wiki/">Solid 5.1.6</a>
     </dl>
   </section>
 </div>
-<script src="static/js/jquery.js"></script>
+<script src="/static/js/jquery.js"></script>
 <script src="/common/js/solid-auth-client.bundle.js"></script>
 <script src="/common/js/auth-buttons.js"></script>
-<script src="static/js/rdflib.min.js"></script>
-<script src="static/js/main.js"></script>
+<script src="/static/js/rdflib.min.js"></script>
+<script src="/static/js/main.js"></script>
 </body>
 </html>

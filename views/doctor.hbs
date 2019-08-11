@@ -1,0 +1,21 @@
+
+DOCTORS
+
+Pacienti:
+<ul>
+{{#each patients as |patient key|}}
+    <li>{{patient}}</li>
+{{/each}}
+</ul>
+
+<br />
+<hr>
+{{ lookup patients 0 }}
+
+<div>
+    SESSION:
+    {{#with session}}
+        {{data }}
+    {{/with}}
+
+</div>

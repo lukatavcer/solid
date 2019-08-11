@@ -8,46 +8,44 @@
   <title>{{#if name}}{{name}} &ndash; {{/if}}Solid Home</title>
   <link rel="stylesheet" href="/common/css/bootstrap.min.css">
   <link rel="stylesheet" href="/common/css/solid.css">
+  <link rel="stylesheet" href="/static/css/main.css">
 </head>
 <body>
 <div class="container">
-  <nav class="navbar navbar-default">
-    <div class="container-fluid">
-      <div class="navbar-header">
-        <a href="/" class="navbar-brand">{{#if name}}{{name}} &ndash; {{/if}}Solid Home</a>
-      </div>
-      <div class="nav navbar-right navbar-form">
-        <button id="login"  type="button" class="hidden btn btn-default btn-success">Log in</button>
-        <button id="logout" type="button" class="hidden btn btn-danger">Log out</button>
-      </div>
+  <div class="page-header">
+    <div class="pull-right">
+      <button id="login" type="button" class="hidden btn btn-default btn-success">Prijava</button>
+      <button id="logout" type="button" class="hidden btn btn-danger">Odjava</button>
     </div>
-  </nav>
+
+    <h1>{{#if name}}{{name}} &ndash; {{/if}}Solid domača stran</h1>
+  </div>
 
   <p class="lead">
     <span>
-      This is a public homepage of {{#if name}}{{name}}, whose WebID is{{else}}a user with WebID{{/if}}
+      To je domača stran uporabnika{{#if name}} {{name}}{{/if}}, čigar WebID je
     </span>
     <a href="{{webId}}"><mark>{{webId}}</mark></a>.
   </p>
 
   <section>
-    <h1>Data</h1>
+    <h1>Podatki</h1>
     <div class="list-group">
       <a href="/profile/card" target="_blank" class="list-group-item">
-        <span class="lead">Profile</span>
-        <span class="badge">public</span>
+        <span class="lead">Profil</span>
+        <span class="badge">javno</span>
       </a>
       <a href="/inbox/" target="_blank" class="list-group-item">
-        <span class="lead">Inbox</span>
-        <span class="badge">private</span>
+        <span class="lead">Sporočila</span>
+        <span class="badge">zasebno</span>
       </a>
       <a href="/public/" target="_blank" class="list-group-item">
-        <span class="lead">Public Folder</span>
-        <span class="badge">public</span>
+        <span class="lead">Javna Mapa</span>
+        <span class="badge">javno</span>
       </a>
       <a href="/private/" target="_blank" class="list-group-item">
-        <span class="lead">Private Folder</span>
-        <span class="badge">private</span>
+        <span class="lead">Zasebna Mapa</span>
+        <span class="badge">zasebno</span>
       </a>
     </div>
   </section>
@@ -56,16 +54,16 @@
     <h1>Apps</h1>
     <div class="list-group">
       <a href="https://github.com/solid/userguide" target="_blank" class="list-group-item">
-        <span class="lead">Getting started with Solid and Data Browser</span>
+        <span class="lead">Navodila za uporabo platforme Solid in podatkovnega brskalnika</span>
       </a>
     </div>
   </section>
 
   <section class="hidden" id="account-settings">
-    <h1>Account settings</h1>
+    <h1>Nastavitve računa</h1>
     <div class="list-group">
-      <a href="/account/delete/" class="list-group-item">
-        <span class="lead">Delete account</span>
+      <a href="https://example.com:8443/account/delete/" class="list-group-item">
+        <span class="lead">Izbriši račun</span>
       </a>
     </div>
   </section>

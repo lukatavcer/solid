@@ -5,11 +5,19 @@ solid.auth.trackSession(session => {
   const loggedIn = !!session;
   $('#login').toggle(!loggedIn);
   $('#logout').toggle(loggedIn);
+  const $userUrl = $('#user');
   if (loggedIn) {
-    $('#user').text(session.webId);
+    $('#loggedIn').toggle(true);
+    $userUrl.text(session.webId);
+    $userUrl.attr('href', session.webId);
+
     // Use the user's WebID as default profile
-    if (!$('#profile').val())
-      $('#profile').val(session.webId);
+    const $profile = $('#profile');
+    if (!$profile.val()) {
+      $profile.val(session.webId);
+    }
+  } else {
+    $('#loggedIn').toggle(false);
   }
 });
 

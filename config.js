@@ -4,8 +4,8 @@ module.exports = {
     root: "data",
     // dbPath: ".db",
     // configPath: "config",
-    port: "8433",
-        serverUri: 'https://example.com:8433',
+    port: "8443",
+        serverUri: 'https://example.com:8443',
     mount: "/",
     multiuser: true,
     enforceToc: false,
@@ -15,5 +15,13 @@ module.exports = {
     disablePasswordChecks: true,
     server: {
         name: "example.com"
-    }
+    },
+    email: {
+        host: 'example.com',
+        port: 25,
+        secure: false,
+        tls: {
+            rejectUnauthorized: false
+        }
+    },
 };

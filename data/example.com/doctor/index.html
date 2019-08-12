@@ -34,26 +34,15 @@
             Prijavljeni ste kot
             <a href="#" id="user" target="_blank"></a>.
         </p>
-
         <div class="row">
-            <div class="col-xs-12">
-                <label for="profile">Profil:</label>
-                <input id="profile">
-                <button id="view-profile">Poglej profil</button>
-            </div>
-        </div>
-
-        <div class="row">
-            <div class="col-xs-12">
-                <strong>Ime:</strong>
-                <div class="d-inline" id="fullName"></div>
-            </div>
-        </div>
-
-        <div class="row">
-            <div class="col-xs-12">
-                <strong>Prijatelji:</strong>
-                <ul id="friends"></ul>
+            <div class="col-xs-6">
+                <label>Profil:</label>
+                <div class="input-group">
+                    <input type="text" class="form-control" id="profile" placeholder="Search for...">
+                    <span class="input-group-btn">
+                        <button class="btn btn-default" type="button" id="view-profile">Poglej profil</button>
+                    </span>
+                </div>
             </div>
         </div>
     </section>
@@ -89,7 +78,9 @@
             <div class="row">
                 <div class="col-xs-12">
                     <h2 class="d-inline">Pacienti</h2>
-                    <button type="button" class="btn btn-primary ml-1" id="btn-load-patients" onClick="loadPatients()">Osveži</button>
+                    <button type="button" class="btn btn-primary ml-1" id="btn-load-patients" onClick="loadPatients()">
+                        Osveži
+                    </button>
                 </div>
             </div>
             <div class="row">

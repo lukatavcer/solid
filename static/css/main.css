@@ -59,6 +59,7 @@ a {
     position: relative;
   }
 
+#btn-load-records,
 #btn-load-patients {
   top: -5px;
   position: relative;

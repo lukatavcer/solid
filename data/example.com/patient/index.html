@@ -34,34 +34,44 @@
             Prijavljeni ste kot
             <a href="#" id="user" target="_blank"></a>.
         </p>
-
-        <div class="row">
-            <div class="col-xs-12">
-                <label for="profile">Profil:</label>
-                <input id="profile">
-                <button id="view-profile">Poglej profil</button>
-            </div>
-        </div>
-
-        <div class="row">
-            <div class="col-xs-12">
-                <strong>Ime:</strong>
-                <div class="d-inline" id="fullName"></div>
-            </div>
-        </div>
-
-        <div class="row">
-            <div class="col-xs-12">
-                <strong>Prijatelji:</strong>
-                <ul id="friends"></ul>
-            </div>
-        </div>
     </section>
 
     <section>
-        <h2>Podatki o strežniku</h2>
-        <strong>Ime:</strong> example.com<br/>
-        <strong>Platforma:</strong> <a href="https://www.w3.org/community/solid/wiki/">Solid 5.1.6</a>
+        <div class="row" style="margin-bottom: 15px;">
+            <div class="col-xs-8">
+                <h2 class="d-inline">Moji izvidi</h2>
+                <button type="button" class="btn btn-primary ml-1" id="btn-load-records" onClick="loadPatients()">
+                    Osveži
+                </button>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-8">
+                <div class="media">
+                    <div class="media-left">
+                        <a href="#">
+                            <img class="media-object" data-src="favicon.ico" alt="64x64" src="/favicon.ico" data-holder-rendered="true" style="width: 64px; height: 64px;">
+                        </a>
+                    </div>
+                    <div class="media-body">
+                        <h4 class="media-heading">Izvid 1</h4>
+                        Cras sit amet nibh libero, in gravida nulla. Nulla vel metus scelerisque ante sollicitudin commodo. Cras purus odio, vestibulum in vulputate at, tempus viverra turpis. Fusce condimentum nunc ac nisi vulputate fringilla. Donec lacinia congue felis in faucibus.
+                    </div>
+                </div>
+
+                <div class="media">
+                    <div class="media-left">
+                        <a href="#">
+                            <img class="media-object" data-src="favicon.ico" alt="64x64" src="/favicon.ico" data-holder-rendered="true" style="width: 64px; height: 64px;">
+                        </a>
+                    </div>
+                    <div class="media-body">
+                        <h4 class="media-heading">Izvid 2</h4>
+                        Cras sit amet nibh libero, in gravida nulla. Nulla vel metus scelerisque ante sollicitudin commodo. Cras purus odio, vestibulum in vulputate at, tempus viverra turpis. Fusce condimentum nunc ac nisi vulputate fringilla. Donec lacinia congue felis in faucibus.
+                    </div>
+                </div>
+            </div>
+        </div>
     </section>
 </div>
 <script src="/static/js/jquery.js"></script>

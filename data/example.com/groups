@@ -1,0 +1,21 @@
+@prefix    acl:  <http://www.w3.org/ns/auth/acl#>.
+@prefix     dc:  <http://purl.org/dc/elements/1.1/>.
+@prefix  vcard:  <http://www.w3.org/2006/vcard/ns#>.
+@prefix    xsd:  <http://www.w3.org/2001/XMLSchema#>.
+
+<#Doctor>
+    a                vcard:Group;
+    vcard:hasUID     <urn:uuid:8831CBAD-1111-2222-8563-F0F4787E5398:ABGroup>;
+    dc:created       "2019-07-07T12:18:19+0000"^^xsd:dateTime;
+    dc:modified      "2019-07-07T14:45:15+0000"^^xsd:dateTime;
+
+    # Accounting group members:
+    vcard:hasMember  <https://lukatavcer.example.com:8443/profile/card#me>;
+    vcard:hasMember  <https://doctor.example.com:8443/profile/card#me>.
+
+<#Patient>
+    a                vcard:Group;
+    vcard:hasUID     <urn:uuid:8831CBAD-3333-4444-8563-F0F4787E5398:ABGroup>;
+
+    # Management group members:
+    vcard:hasMember  <https://patient.example.com:8443/profile/card#me>.

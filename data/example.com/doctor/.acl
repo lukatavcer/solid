@@ -3,16 +3,26 @@
 # Individual authorization
 <#authorization1>
     a             acl:Authorization;
-    acl:accessTo  <https://example.com:8443/doctor/>;
+    acl:accessTo  <./>;
     acl:mode      acl:Read,
                   acl:Write,
                   acl:Control;
+    acl:default <./>;
     acl:agent     <https://lukatavcer.example.com:8443/profile/card#me>.
 
 # Group authorization, giving Read/Write access to members of the Doctor group
 <#authorization2>
     a               acl:Authorization;
-    acl:accessTo    <https://example.com:8443/doctor/>;
+    acl:accessTo    <./>;
     acl:mode        acl:Read,
                     acl:Write;
+    acl:default <./>;
+    acl:agentGroup  <https://example.com:8443/groups.ttl#Doctor>.
+
+
+# Group authorization, giving Read access to members of the Doctor group
+<#authorization3>
+    a               acl:Authorization;
+    acl:accessTo    <./data$.ttl/>;
+    acl:mode        acl:Read;
     acl:agentGroup  <https://example.com:8443/groups.ttl#Doctor>.

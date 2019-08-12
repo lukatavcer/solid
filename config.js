@@ -9,8 +9,8 @@ module.exports = {
     mount: "/",
     multiuser: true,
     enforceToc: false,
-    sslKey: path.resolve('config/cert/new.key'),
-    sslCert: path.resolve('config/cert/new.cert'),
+    sslKey: path.resolve('config/cert/server.key'),
+    sslCert: path.resolve('config/cert/server.crt'),
     webid: true,
     disablePasswordChecks: true,
     server: {

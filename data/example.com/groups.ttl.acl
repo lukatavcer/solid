@@ -10,6 +10,13 @@
     #acl:accessTo </groups.ttl>;
     #acl:mode acl:Read.
 
+# Doctors can view group Patient
+<#doctor>
+    a acl:Authorization;
+    acl:agentGroup  <https://example.com:8443/groups.ttl#Doctor>;
+    acl:accessTo </groups.ttl>;
+    acl:mode
+        acl:Read.
 
 # Luka has all of the access modes allowed to change groups
 <#owner>
@@ -17,4 +24,4 @@
     acl:agent <https://lukatavcer.example.com:8443/profile/card#me>;
     acl:accessTo </groups.ttl>;
     acl:mode
-        acl:Read, acl:Write, acl:Append, acl:Control.
+        acl:Read, acl:Write, acl:Control.

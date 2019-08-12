@@ -18,4 +18,8 @@
     vcard:hasUID     <urn:uuid:8831CBAD-3333-4444-8563-F0F4787E5398:ABGroup>;
 
     # Patient group members:
+    vcard:hasMember  <https://patient.example.com:8443/profile/card#me>;
+    vcard:hasMember  <https://patient2.example.com:8443/profile/card#me>;
+    vcard:hasMember  <https://patient3.example.com:8443/profile/card#me>;
+    vcard:hasMember  <https://patient4.example.com:8443/profile/card#me>;
     vcard:hasMember  <https://patient.example.com:8443/profile/card#me>.

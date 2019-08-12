@@ -1,5 +1,5 @@
 const FOAF = $rdf.Namespace('http://xmlns.com/foaf/0.1/');
-
+const VCARD = $rdf.Namespace("http://www.w3.org/2006/vcard/ns#");
 
 // Update components to match the user's login status
 solid.auth.trackSession(session => {
@@ -23,7 +23,7 @@ solid.auth.trackSession(session => {
 });
 
 
-$('#view').click(async function loadProfile() {
+$('#view-profile').click(async function loadProfile() {
     // Set up a local data store and associated data fetcher
     const store = $rdf.graph();
     const fetcher = new $rdf.Fetcher(store);

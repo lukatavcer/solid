@@ -1,8 +1,11 @@
-const FOAF = $rdf.Namespace('http://xmlns.com/foaf/0.1/');
 const ROOT_NAME = 'example.com';
 const PORT = '8443';
 const ROOT_URL = 'https://' + ROOT_NAME + ':' + PORT;
 const BIN_PATH = 'https://lukatavcer.example.com:8443/med-app/records/';
+
+$(document).ready(function() {
+    loadPatients();
+});
 
 
 $('#view').click(async function loadProfile() {
@@ -30,15 +33,6 @@ $('#view').click(async function loadProfile() {
                     .click(() => $('#profile').val(friend.value))
                     .click(loadProfile)));
     });
-});
-
-
-$('#btn-data').click(async function () {
-    const session = await solid.auth.currentSession();
-    if (!session)
-        alert('Hello stranger!');
-    else
-        alert(`Hello ${session.webId}!`);
 });
 
 fetchFriends = async () => {
@@ -130,7 +124,7 @@ Pastebin = (function () {
             } else {
                 document.getElementById('view-title').innerHTML = bin.title;
                 document.getElementById('view-body').innerHTML = bin.body;
-                document.getElementById('view').classList.remove('hidden');
+                document.getElementById('view-publish').classList.remove('hidden');
             }
         }).catch(function (err) {
             console.log(err);
@@ -142,7 +136,7 @@ Pastebin = (function () {
         bin.body = $('#edit-body').val();
 
         let store = $rdf.graph();
-        let thisResource = $rdf.sym(defaultContainer);
+        let thisResource = $rdf.sym(defaultContainer + "record");  // Node identified by a URI
         store.add(thisResource, vocab.dct('title'), $rdf.lit(bin.title));  // A name given to the resource.
         store.add(thisResource, vocab.sioc('content'), $rdf.lit(bin.body));  // The content of the Item in plain text format.
         let data = new $rdf.Serializer(store).toN3(store);
@@ -246,4 +240,42 @@ async function containerExists(url) {
             exists = false;
     });
     return exists;
+}
+
+async function loadPatients() {
+    const $patientsLoader = $('#patients-loader');
+    const $patients = $('#patients');
+    $patients.empty();
+    $patientsLoader.show();
+
+    const session = await solid.auth.currentSession();
+    if (session) {
+        console.log(`Hello ${session.webId}!`);
+
+        // Set up a local data store and associated data fetcher
+        const store = $rdf.graph();
+        const fetcher = new $rdf.Fetcher(store);
+
+        const patientGroup = store.sym('https://example.com:8443/groups.ttl#Patient');
+
+        // Fetch patients into the store
+        await fetcher.load('https://example.com:8443/groups.ttl');
+        const patients = store.each(patientGroup, VCARD('hasMember'));  // (subject, predicate, object, document)
+
+        // Display patients
+        $patientsLoader.hide();
+
+        patients.forEach(async (patient) => {
+            await fetcher.load(patient);
+            let fullName = store.any(patient, FOAF('name'));
+            let value = "<span class=\"badge\"> + </span>" + (fullName && fullName.value || patient.value);
+            $patients.append(
+                $('<li class="list-group-item"></li>')
+                    .html(value)
+                    .prop('title', patient.value)
+            );
+        });
+    } else {
+        $patientsLoader.hide();
+    }
 }

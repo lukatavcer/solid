@@ -8,7 +8,7 @@
     acl:agent <https://lukatavcer.example.com:8443/profile/card#me>;
     acl:accessTo <./>;
     acl:default <./>;
-    acl:mode acl:Read, acl:Write, acl:Control, acl:Append.
+    acl:mode acl:Read, acl:Write, acl:Control.
 
 # The public has read permissions
 <#public>

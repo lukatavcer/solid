@@ -8,3 +8,13 @@
     acl:accessTo </>;
     acl:default </common/>;
     acl:mode acl:Read.
+
+
+# Admin / Luka has all permissions
+<#owner>
+    a acl:Authorization;
+    acl:agent <https://lukatavcer.example.com:8443/profile/card#me>;
+    acl:accessTo <./>;
+    acl:default <./>;
+    acl:defaultForNew <./>;
+    acl:mode acl:Read, acl:Write, acl:Control.

@@ -1,0 +1,20 @@
+# Root ACL resource for the root
+@prefix acl: <http://www.w3.org/ns/auth/acl#>.
+@prefix foaf: <http://xmlns.com/foaf/0.1/>.
+
+# Uncomment to make it readable to public
+# Groups is readable by the public
+#<#public>
+    #a acl:Authorization;
+    #acl:agentClass foaf:Agent;
+    #acl:accessTo </groups>;
+    #acl:mode acl:Read.
+
+
+# Luka has all of the access modes allowed to change groups
+<#owner>
+    a acl:Authorization;
+    acl:agent <https://lukatavcer.example.com:8443/profile/card#me>;
+    acl:accessTo </groups>;
+    acl:mode
+        acl:Read, acl:Write, acl:Append, acl:Control.

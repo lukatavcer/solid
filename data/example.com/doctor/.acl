@@ -1,0 +1,18 @@
+@prefix  acl:  <http://www.w3.org/ns/auth/acl#>.
+
+# Individual authorization
+<#authorization1>
+    a             acl:Authorization;
+    acl:accessTo  <https://example.com:8443/doctor/>;
+    acl:mode      acl:Read,
+                  acl:Write,
+                  acl:Control;
+    acl:agent     <https://lukatavcer.example.com:8443/profile/card#me>.
+
+# Group authorization, giving Read/Write access to members of the Doctor group
+<#authorization2>
+    a               acl:Authorization;
+    acl:accessTo    <https://example.com:8443/doctor/>;
+    acl:mode        acl:Read,
+                    acl:Write;
+    acl:agentGroup  <https://example.com:8443/groups.ttl>.

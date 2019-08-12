@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Prototip Solid aplikacije</title>
+    <link rel="stylesheet" href="/common/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/common/css/solid.css">
+    <link rel="stylesheet" href="/static/css/main.css">
+</head>
+<body>
+
+<div class="container">
+    <div class="page-header">
+        <div class="pull-right">
+            <a class="p-2 text-dark" href="/">Domov</a>
+            <a class="p-2 text-dark" href="/doctor">Zdravnik</a>
+            <a class="p-2 text-dark" href="/patient">Pacient</a>
+            <button id="register" type="button" class="btn btn-primary">Registracija</button>
+            <button id="login" type="button" class="hidden btn btn-default btn-success">Prijava</button>
+            <button id="logout" type="button" class="hidden btn btn-danger">Odjava</button>
+        </div>
+
+        <h1>Zdravnik</h1>
+    </div>
+
+    <p class="lead">
+        Stran, ki jo lahko obiščejo samo zdravniki (člani skupine <strong>Doctor</strong>).
+    </p>
+
+    <section>
+        <h2>Profil</h2>
+        <p class="lead" id="loggedIn" style="display: none;">
+            You are logged in asa
+            <a href="#" id="user" target="_blank"></a>.
+        </p>
+
+        <div class="row">
+            <div class="col-xs-12">
+                <label for="profile">Profile:</label>
+                <input id="profile">
+                <button id="view">View</button>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-xs-12">
+                <strong>Full name</strong>
+                <div class="d-inline" id="fullName"></div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-xs-12">
+                <strong>Patients</strong>
+                <ul id="friends"></ul>
+            </div>
+        </div>
+    </section>
+
+    <div class="row">
+        <div class="col-xs-12">
+            <button type="button" class="btn btn-primary" id="btn-data">Naloži podatke</button>
+        </div>
+    </div>
+
+    Pacienti:
+    <ul>
+        {{#each patients as |patient key|}}
+        <li>{{patient}}</li>
+        {{/each}}
+    </ul>
+
+    <br/>
+    {{ lookup patients 0 }}
+    <hr>
+
+    <div class="row">
+        <div class="content center-text hidden" id="view">
+            <h1 id="view-title"></h1>
+            <br>
+            <div id="view-body"></div>
+        </div>
+
+        <div class="content center-text hidden" id="edit">
+            <input type="text" id="edit-title" class="block" placeholder="Title...">
+            <br>
+            <textarea id="edit-body" class="block" placeholder="Paste text here..."></textarea>
+            <br>
+            <button id="submit" class="btn">Publish</button>
+        </div>
+    </div>
+</div>
+<script src="/static/js/jquery.js"></script>
+<script src="/common/js/solid-auth-client.bundle.js"></script>
+<script src="/common/js/auth-buttons.js"></script>
+<script src="/static/js/rdflib.min.js"></script>
+<script src="/static/js/solid.min.js"></script>
+<script src="/static/js/main.js"></script>
+</body>
+</html>

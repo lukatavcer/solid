@@ -7,7 +7,7 @@
 #<#public>
     #a acl:Authorization;
     #acl:agentClass foaf:Agent;
-    #acl:accessTo </groups>;
+    #acl:accessTo </groups.ttl>;
     #acl:mode acl:Read.
 
 
@@ -15,6 +15,6 @@
 <#owner>
     a acl:Authorization;
     acl:agent <https://lukatavcer.example.com:8443/profile/card#me>;
-    acl:accessTo </groups>;
+    acl:accessTo </groups.ttl>;
     acl:mode
         acl:Read, acl:Write, acl:Append, acl:Control.

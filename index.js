@@ -35,7 +35,7 @@ app.set('view engine', '.hbs');
 // **************************************
 // My routes
 // **************************************
-app.get('/doctor', function (req, res) {
+app.get('/doctore', function (req, res) {
     logger.info(req);
     let context = {
         patients: [
@@ -54,7 +54,7 @@ app.get('/doctor', function (req, res) {
     res.render('doctor', context);
 });
 
-app.get('/patient', function (req, res) {
+app.get('/patiente', function (req, res) {
     logger.info("patient");
     res.render('patient', {title: 'Pacient'});
 });

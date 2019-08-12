@@ -89,13 +89,10 @@ Pastebin = (function () {
         title: '',
         body: ''
     };
-    let appExists = true;
-    let dirExists = true;
 
     async function init() {
-        // $('#edit').addClass('hidden');
-        // $('#view').addClass('hidden');
         const session = await solid.auth.currentSession();
+
         if (session) {
             console.log(defaultContainer);
 
@@ -124,52 +121,22 @@ Pastebin = (function () {
         }
     }
 
-    function initApp() {
-        solidClient.login()
-            .then(function (webId) {
-                return solidClient.getProfile(webId)
-            })
-            .then(function (profile) {
-                return profile.loadAppRegistry()
-            })
-            .then(function (profile) {
-                // The profile has been updated, app registry loaded. Now you can register
-                // apps with is.
-                let options = {
-                    name: 'Contact Manager',
-                    shortdesc: 'A reference contact manager',
-                    redirectTemplateUri: 'https://solid.github.io/contacts/?uri={uri}'
-                };
-                let typesForApp = [ vocab.vcard('AddressBook') ];
-                let isListed = true;
-                let app = new AppRegistration(options, typesForApp, isListed);
-                return profile.registerApp(app)
-            })
-            .then(function (profile) {
-                // The app entry was created. You can now query the registry for it
-                return profile.appsForType(vocab.vcard('AddressBook'))
-            })
-            .then(function (registrationResults) {
-                var app = registrationResults[0];
-                app.name  // -> 'Contact Manager'
-                app.shortdesc  // -> ...
-                app.redirectTemplateUri
-            })
-    }
-
     function load(url, showEditor) {
         solidClient.web.get(url).then(function (response) {
-            var graph = response.parsedGraph();
-            // set url
+            let store = response.parsedGraph();
+
+            // Set url
             bin.url = response.url;
-            var subject = $rdf.sym(response.url);
-            // add title
-            var title = graph.any(subject, vocab.dct('title'));
+            let subject = $rdf.sym(response.url);
+
+            // Add title
+            let title = store.any(subject, vocab.dct('title'));
             if (title) {
                 bin.title = title.value;
             }
-            // add body
-            var body = graph.any(subject, vocab.sioc('content'));
+
+            // Add body
+            let body = store.any(subject, vocab.sioc('content'));
             if (body) {
                 bin.body = body.value;
             }
@@ -177,8 +144,7 @@ Pastebin = (function () {
             if (showEditor) {
                 document.getElementById('edit-title').value = bin.title;
                 document.getElementById('edit-body').innerHTML = bin.body;
-                document.getElementById('submit').setAttribute('onclick',
-                    'Pastebin.update()');
+                document.getElementById('submit').setAttribute('onclick', 'Pastebin.update()');
                 document.getElementById('edit').classList.remove('hidden');
             } else {
                 document.getElementById('view-title').innerHTML = bin.title;
@@ -186,7 +152,6 @@ Pastebin = (function () {
                 document.getElementById('view').classList.remove('hidden');
             }
         }).catch(function (err) {
-            // do something with the error
             console.log(err);
         });
     }
@@ -201,7 +166,9 @@ Pastebin = (function () {
         store.add(thisResource, vocab.sioc('content'), $rdf.lit(bin.body));  // The content of the Item in plain text format.
         let data = new $rdf.Serializer(store).toN3(store);
 
-        solidClient.web.post(defaultContainer, data, 'med_record', true).then(function (meta) {
+        // Check if patient today's med record exists, if not create new
+        // Else get it and append data to it
+        solidClient.web.post(defaultContainer, data, 'med_record').then(function (meta) {
             // view
             let url = meta.url;
             console.log("Url to publish: " + url);
@@ -217,16 +184,16 @@ Pastebin = (function () {
             console.log(err);
         });
 
-        solid.auth.fetch(defaultContainer, {
-            method: 'POST', // or 'PUT'
-            headers:{
-                'Content-Type': 'text/turtle',
-                'Link': '<http://www.w3.org/ns/ldp#BasicContainer>; rel="type"',
-                'Slug':  'logbook'
-            }
-        }).then((res) => {return res;})
-            .then((response) => {callback(null);})
-            .catch((error) => {callback('Error: '+JSON.stringify(error));});
+        // solid.auth.fetch(defaultContainer, {
+        //     method: 'POST', // or 'PUT'
+        //     headers:{
+        //         'Content-Type': 'text/turtle',
+        //         'Link': '<http://www.w3.org/ns/ldp#BasicContainer>; rel="type"',
+        //         'Slug':  'logbook'
+        //     }
+        // }).then((res) => {return res;})
+        //   .then((response) => {callback(null);})
+        //   .catch((error) => {callback('Error: '+JSON.stringify(error));});
     }
 
     function update() {
@@ -294,7 +261,7 @@ function createContainer(parentUrl, containerName) {
 async function containerExists(url) {
     let exists = true;
 
-    await solidClient.web.get(url).catch(function (err) {
+    await solidClient.web.head(url).catch(function (err) {
         if (err.code === 404)
             exists = false;
     });

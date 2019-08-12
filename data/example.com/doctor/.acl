@@ -15,4 +15,4 @@
     acl:accessTo    <https://example.com:8443/doctor/>;
     acl:mode        acl:Read,
                     acl:Write;
-    acl:agentGroup  <https://example.com:8443/groups.ttl>.
+    acl:agentGroup  <https://example.com:8443/groups.ttl#Doctor>.

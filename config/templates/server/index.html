@@ -21,10 +21,6 @@
 
   <p class="lead">
     This is a prototype implementation of a Solid server.
-
-    It is a fully functional server, but there are no security or stability guarantees.
-
-    If you have not already done so, please create an account.
   </p>
 
   <p class="lead hidden" id="loggedIn">
@@ -33,20 +29,9 @@
   </p>
 
   <section>
-    {{#if serverLogo}}
-    <img src="{{serverLogo}}" />
-    {{/if}}
-    <h2>Server info</h2>
-    <dl>
-      <dt>Name</dt>
-      <dd>{{serverName}}</dd>
-      {{#if serverDescription}}
-      <dt>Description</dt>
-      <dd>{{serverDescription}}</dd>
-      {{/if}}
-      <dt>Details</dt>
-      <dd>Running on <a href="https://www.w3.org/community/solid/wiki/">Solid {{serverVersion}}</a></dd>
-    </dl>
+    <h2>Podatki o strežniku</h2>
+    <strong>Ime:</strong> example.com<br/>
+    <strong>Platforma:</strong> <a href="https://www.w3.org/community/solid/wiki/">Solid 5.1.6</a>
   </section>
 </div>
 <script src="/common/js/solid-auth-client.bundle.js"></script>

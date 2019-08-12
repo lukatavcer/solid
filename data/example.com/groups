@@ -9,7 +9,7 @@
     dc:created       "2019-07-07T12:18:19+0000"^^xsd:dateTime;
     dc:modified      "2019-07-07T14:45:15+0000"^^xsd:dateTime;
 
-    # Accounting group members:
+    # Doctor group members:
     vcard:hasMember  <https://lukatavcer.example.com:8443/profile/card#me>;
     vcard:hasMember  <https://doctor.example.com:8443/profile/card#me>.
 
@@ -17,5 +17,5 @@
     a                vcard:Group;
     vcard:hasUID     <urn:uuid:8831CBAD-3333-4444-8563-F0F4787E5398:ABGroup>;
 
-    # Management group members:
+    # Patient group members:
     vcard:hasMember  <https://patient.example.com:8443/profile/card#me>.

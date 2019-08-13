@@ -1,5 +1,15 @@
 const FOAF = $rdf.Namespace('http://xmlns.com/foaf/0.1/');
-const VCARD = $rdf.Namespace("http://www.w3.org/2006/vcard/ns#");
+// const VCARD = $rdf.Namespace("http://www.w3.org/2006/vcard/ns#");
+
+const solidClient = SolidClient;
+const vocab = solidClient.vocab;
+
+const RDF = vocab.rdf;
+const VCARD = vocab.vcard;
+const DCT = vocab.dct;
+const SIOC = vocab.sioc;
+const XSD = vocab.xsd;
+
 
 // Update components to match the user's login status
 solid.auth.trackSession(session => {

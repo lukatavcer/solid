@@ -22,6 +22,8 @@ solid.auth.trackSession(session => {
         $userUrl.text(session.webId);
         $userUrl.attr('href', session.webId);
 
+        initContainer(session.webId.split('/profile')[0]);  // TODO this not good, should get app's storage from preferences (data storage)
+
         // Use the user's WebID as default profile
         const $profile = $('#profile');
         if (!$profile.val()) {
@@ -59,3 +61,50 @@ $('#view-profile').click(async function loadProfile() {
                     .click(loadProfile)));
     });
 });
+
+// Check if user has med-app container, if not create it
+async function initContainer(userUri) {
+    const medAppContainer = userUri + '/med-app';
+    const recordsContainer = medAppContainer + '/records';
+
+    await containerExists(medAppContainer).then(async function(exists) {
+        if (!exists) {
+            // solidClient.registerApp();  // TODO
+            createContainer(userUri, "med-app");
+        }
+        await containerExists(recordsContainer).then(function(exists) {
+            if (!exists) {
+                createContainer(medAppContainer, "records");
+            }
+        });
+    });
+}
+
+async function containerExists(url) {
+    let exists = true;
+
+    await solidClient.web.head(url).catch(function (err) {
+        if (err.code === 404)
+            exists = false;
+    });
+    return exists;
+}
+
+function createContainer(parentUrl, containerName) {
+    let options = '';
+    let data = '<#this> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://rdfs.org/sioc/ns#Blog> .';
+    let metadata =  `<#${containerName}> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://rdfs.org/sioc/ns#Blog> .`;
+
+    solidClient.web.createContainer(parentUrl, containerName, options, metadata).then(
+        function(solidResponse) {
+            // console.log(solidResponse)
+            // The resulting object has several useful properties.
+            // See lib/solid/response.js for details
+            // solidResponse.url - value of the Location header
+            // solidResponse.acl - url of acl resource
+            // solidResponse.meta - url of meta resource
+        }
+    ).catch(function(err){
+        console.log(err) // error object
+    })
+}

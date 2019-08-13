@@ -1,25 +1,27 @@
+@prefix : <#>.
 @prefix solid: <http://www.w3.org/ns/solid/terms#>.
-@prefix foaf: <http://xmlns.com/foaf/0.1/>.
-@prefix pim: <http://www.w3.org/ns/pim/space#>.
-@prefix schema: <http://schema.org/>.
+@prefix pro: <./>.
+@prefix n0: <http://xmlns.com/foaf/0.1/>.
+@prefix schem: <http://schema.org/>.
+@prefix n1: <http://www.w3.org/ns/auth/acl#>.
 @prefix ldp: <http://www.w3.org/ns/ldp#>.
+@prefix inbox: </inbox/>.
+@prefix sp: <http://www.w3.org/ns/pim/space#>.
+@prefix p: </>.
 
-<>
-    a foaf:PersonalProfileDocument ;
-    foaf:maker <https://patient3.example.com:8443/profile/card#me> ;
-    foaf:primaryTopic <https://patient3.example.com:8443/profile/card#me> .
+pro:card a n0:PersonalProfileDocument; n0:maker :me; n0:primaryTopic :me.
 
-<https://patient3.example.com:8443/profile/card#me>
-    a foaf:Person ;
-    a schema:Person ;
-
-    foaf:name "Janez Bolan" ;
-
-    solid:account </> ;  # link to the account uri
-    pim:storage </> ;    # root storage
-
-    ldp:inbox </inbox/> ;
-
-    pim:preferencesFile </settings/prefs.ttl> ;  # private settings/preferences
-    solid:publicTypeIndex </settings/publicTypeIndex.ttl> ;
-    solid:privateTypeIndex </settings/privateTypeIndex.ttl> .
+:me
+    a schem:Person, n0:Person;
+    n1:trustedApp
+            [
+                n1:mode n1:Append, n1:Read, n1:Write;
+                n1:origin <https://example.com:8443>
+            ];
+    ldp:inbox inbox:;
+    sp:preferencesFile </settings/prefs.ttl>;
+    sp:storage p:;
+    solid:account p:;
+    solid:privateTypeIndex </settings/privateTypeIndex.ttl>;
+    solid:publicTypeIndex </settings/publicTypeIndex.ttl>;
+    n0:name "Janez Bolan".

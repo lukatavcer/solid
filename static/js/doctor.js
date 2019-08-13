@@ -51,17 +51,17 @@ removeFriend = async (webId) => {
 
 Record = (function () {
     // Default publish location
-    // 'https://lukatavcer.example.com:8443/med-app/records/'
     let defaultContainer = BIN_PATH;
     let WebId = 'https://lukatavcer.example.com:8443/';
     let medAppContainer = WebId + 'med-app/';
     let recordsContainer = medAppContainer + 'records/';
 
-    // Bin structure
-    let bin = {
+    // Record structure
+    let record = {
         url: '',
         title: '',
-        body: ''
+        body: '',
+        patient: '',
     };
 
     async function init() {
@@ -69,18 +69,6 @@ Record = (function () {
 
         if (session) {
             console.log(defaultContainer);
-
-            containerExists(medAppContainer).then(function(exists) {
-                if (!exists) {
-                    createContainer(WebId, "med-app");
-                }
-                containerExists(recordsContainer).then(function(exists) {
-                    if (!exists) {
-                        createContainer(medAppContainer, "records");
-                    }
-                });
-            });
-
 
             if (queryVals['view'] && queryVals['view'].length > 0) {
                 load(queryVals['view']);
@@ -98,29 +86,29 @@ Record = (function () {
             let store = response.parsedGraph();
 
             // Set url
-            bin.url = response.url;
+            record.url = response.url;
             let subject = $rdf.sym(response.url);
 
             // Add title
             let title = store.any(subject, DCT('title'));
             if (title) {
-                bin.title = title.value;
+                record.title = title.value;
             }
 
             // Add body
             let body = store.any(subject, SIOC('content'));
             if (body) {
-                bin.body = body.value;
+                record.body = body.value;
             }
 
             if (showEditor) {
-                $('#edit-title').val(bin.title);
-                $('#edit-body').html(bin.body);
+                $('#edit-title').val(record.title);
+                $('#edit-body').html(record.body);
                 $('#submit').attr('onclick', 'Record.update()');
                 $('#edit').removeClass('hidden');
             } else {
-                $('#view-title').html(bin.title);
-                $('#view-body').html(bin.body);
+                $('#view-title').html(record.title);
+                $('#view-body').html(record.body);
                 $('#view-publish').removeClass('hidden');
             }
         }).catch(function (err) {
@@ -136,21 +124,27 @@ Record = (function () {
             return false;
         }
 
+        record.title = $('#edit-title').val();
+        record.body = $('#edit-body').val();
+        record.patient = $('#select-patient').val();
+
         const doctorWebId = session.webId;
-        const patientStorageUri = doctorWebId.split('/profile')[0];  // TODO this not good, should get app's storage from preferences (data storage)
+        const patientStorageUri = record.patient.split('/profile')[0];  // TODO this not good, should get app's storage from preferences (data storage)
         const patientRecordsUri = patientStorageUri + '/med-app/records/';
 
-        bin.title = $('#edit-title').val();
-        bin.body = $('#edit-body').val();
+
+        // Check if user already has initialized container med-app/records, if not create them
+        await initContainer(patientStorageUri);
 
         // Add new medical record/report
         solidClient.web.post(patientRecordsUri).then(function (meta) {
             let newRecordUri = patientStorageUri + meta.url;  // Combine storage root with relative new record URI
 
             let store = $rdf.graph();
-            let newRecord = $rdf.sym(newRecordUri);  // Node identified by a URI
-            store.add(newRecord, DCT('title'), $rdf.lit(bin.title));  // A name given to the resource.
-            store.add(newRecord, SIOC('content'), $rdf.lit(bin.body));  // The content of the Item in plain text format.
+            // let newRecord = $rdf.sym(newRecordUri);  // Node identified by a URI
+            let newRecord = $rdf.sym(SIOC('post'));  // Node identified by a URI
+            store.add(newRecord, DCT('title'), $rdf.lit(record.title));  // A name given to the resource.
+            store.add(newRecord, SIOC('content'), $rdf.lit(record.body));  // The content of the Item in plain text format.
             store.add(newRecord, DCT('created'),  $rdf.lit(moment().format(), '', XSD('dateTime')));
             store.add(newRecord, DCT('creator'),  $rdf.lit(doctorWebId));
 
@@ -176,16 +170,16 @@ Record = (function () {
     }
 
     function update() {
-        bin.title = $('#edit-title').val();
-        bin.body = $('#edit-body').val();
+        record.title = $('#edit-title').val();
+        record.body = $('#edit-body').val();
 
         var graph = $rdf.graph();
         var thisResource = $rdf.sym('');
-        graph.add(thisResource, DCT('title'), bin.title);
-        graph.add(thisResource, SIOC('content'), bin.body);
+        graph.add(thisResource, DCT('title'), record.title);
+        graph.add(thisResource, SIOC('content'), record.body);
         var data = new $rdf.Serializer(graph).toN3(graph);
 
-        solidClient.web.put(bin.url, data).then(function (meta) {
+        solidClient.web.put(record.url, data).then(function (meta) {
             // view
             window.location.search = "?view=" + encodeURIComponent(meta.url);
         }).catch(function (err) {
@@ -229,35 +223,6 @@ $('#test-view').click(function() {
             console.log(err) // error object
         })
 });
-
-function createContainer(parentUrl, containerName) {
-    let options = '';
-    let data = '<#this> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://rdfs.org/sioc/ns#Blog> .';
-    let metadata =  `<#${containerName}> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://rdfs.org/sioc/ns#Blog> .`;
-
-    solidClient.web.createContainer(parentUrl, containerName, options, metadata).then(
-        function(solidResponse) {
-            // console.log(solidResponse)
-            // The resulting object has several useful properties.
-            // See lib/solid/response.js for details
-            // solidResponse.url - value of the Location header
-            // solidResponse.acl - url of acl resource
-            // solidResponse.meta - url of meta resource
-        }
-    ).catch(function(err){
-        console.log(err) // error object
-    })
-}
-
-async function containerExists(url) {
-    let exists = true;
-
-    await solidClient.web.head(url).catch(function (err) {
-        if (err.code === 404)
-            exists = false;
-    });
-    return exists;
-}
 
 async function loadPatients() {
     const $patientsLoader = $('#patients-loader');

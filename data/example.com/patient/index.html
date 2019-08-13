@@ -40,34 +40,41 @@
         <div class="row" style="margin-bottom: 15px;">
             <div class="col-xs-8">
                 <h2 class="d-inline">Moji izvidi</h2>
-                <button type="button" class="btn btn-primary ml-1" id="btn-load-records" onClick="loadPatients()">
+                <button type="button" class="btn btn-primary ml-1" id="btn-load-records" onClick="loadRecords()">
                     Osveži
                 </button>
             </div>
         </div>
         <div class="row">
             <div class="col-xs-8">
-                <div class="media">
-                    <div class="media-left">
-                        <a href="#">
-                            <img class="media-object" data-src="favicon.ico" alt="64x64" src="/favicon.ico" data-holder-rendered="true" style="width: 64px; height: 64px;">
-                        </a>
-                    </div>
-                    <div class="media-body">
-                        <h4 class="media-heading">Izvid 1</h4>
-                        Cras sit amet nibh libero, in gravida nulla. Nulla vel metus scelerisque ante sollicitudin commodo. Cras purus odio, vestibulum in vulputate at, tempus viverra turpis. Fusce condimentum nunc ac nisi vulputate fringilla. Donec lacinia congue felis in faucibus.
-                    </div>
+                <div class="loader" id="records-loader" style="margin-top: 50px;">
+                    <span></span>
+                    <span></span>
+                    <span></span>
                 </div>
-
-                <div class="media">
-                    <div class="media-left">
-                        <a href="#">
-                            <img class="media-object" data-src="favicon.ico" alt="64x64" src="/favicon.ico" data-holder-rendered="true" style="width: 64px; height: 64px;">
-                        </a>
+                <div id="records">
+                    <div class="media">
+                        <div class="media-left">
+                            <a href="#">
+                                <img class="media-object" data-src="favicon.ico" alt="64x64" src="/favicon.ico" data-holder-rendered="true" style="width: 64px; height: 64px;">
+                            </a>
+                        </div>
+                        <div class="media-body">
+                            <h4 class="media-heading">Izvid 1</h4>
+                            Cras sit amet nibh libero, in gravida nulla. Nulla vel metus scelerisque ante sollicitudin commodo. Cras purus odio, vestibulum in vulputate at, tempus viverra turpis. Fusce condimentum nunc ac nisi vulputate fringilla. Donec lacinia congue felis in faucibus.
+                        </div>
                     </div>
-                    <div class="media-body">
-                        <h4 class="media-heading">Izvid 2</h4>
-                        Cras sit amet nibh libero, in gravida nulla. Nulla vel metus scelerisque ante sollicitudin commodo. Cras purus odio, vestibulum in vulputate at, tempus viverra turpis. Fusce condimentum nunc ac nisi vulputate fringilla. Donec lacinia congue felis in faucibus.
+
+                    <div class="media">
+                        <div class="media-left">
+                            <a href="#">
+                                <img class="media-object" data-src="favicon.ico" alt="64x64" src="/favicon.ico" data-holder-rendered="true" style="width: 64px; height: 64px;">
+                            </a>
+                        </div>
+                        <div class="media-body">
+                            <h4 class="media-heading">Izvid 2</h4>
+                            Cras sit amet nibh libero, in gravida nulla. Nulla vel metus scelerisque ante sollicitudin commodo. Cras purus odio, vestibulum in vulputate at, tempus viverra turpis. Fusce condimentum nunc ac nisi vulputate fringilla. Donec lacinia congue felis in faucibus.
+                        </div>
                     </div>
                 </div>
             </div>

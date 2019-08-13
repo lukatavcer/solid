@@ -47,8 +47,7 @@ removeFriend = async (webId) => {
     console.log(`Removing ${webId}`);
 };
 
-const solidClient = SolidClient;
-const vocab = solidClient.vocab;
+
 
 Pastebin = (function () {
     // Default publish location
@@ -105,13 +104,13 @@ Pastebin = (function () {
             let subject = $rdf.sym(response.url);
 
             // Add title
-            let title = store.any(subject, vocab.dct('title'));
+            let title = store.any(subject, DCT('title'));
             if (title) {
                 bin.title = title.value;
             }
 
             // Add body
-            let body = store.any(subject, vocab.sioc('content'));
+            let body = store.any(subject, SIOC('content'));
             if (body) {
                 bin.body = body.value;
             }
@@ -131,29 +130,51 @@ Pastebin = (function () {
         });
     }
 
-    function publish() {
+    async function publish() {
+        const session = await solid.auth.currentSession();
+
+        if (!session) {
+            alert("Za dodajanje izvidov se je potrebno prijaviti!");
+            return false;
+        }
+
+        const doctorWebId = session.webId;
+        const patientStorageUri = doctorWebId.split('/profile')[0];  // TODO this not good, should get app's storage from preferences (data storage)
+        const patientRecordsUri = patientStorageUri + '/med-app/records/';
+
         bin.title = $('#edit-title').val();
         bin.body = $('#edit-body').val();
 
-        let store = $rdf.graph();
-        let thisResource = $rdf.sym(defaultContainer + "record");  // Node identified by a URI
-        store.add(thisResource, vocab.dct('title'), $rdf.lit(bin.title));  // A name given to the resource.
-        store.add(thisResource, vocab.sioc('content'), $rdf.lit(bin.body));  // The content of the Item in plain text format.
-        let data = new $rdf.Serializer(store).toN3(store);
-
         // Check if patient today's med record exists, if not create new
         // Else get it and append data to it
-        solidClient.web.post(defaultContainer, data, 'med_record').then(function (meta) {
+        solidClient.web.post(patientRecordsUri).then(function (meta) {
             // view
-            let url = meta.url;
-            console.log("Url to publish: " + url);
-            if (url && url.slice(0, 4) != 'http') {
-                if (url.indexOf('/') === 0) {
-                    url = url.slice(1, url.length);
-                }
-                url = defaultContainer + url.slice(url.lastIndexOf('/') + 1, url.length);
-            }
-            // window.location.search = "?view=" + encodeURIComponent(url);
+            let newRecordUri = patientStorageUri + meta.url;  // Combine storage root with relative new record URI
+
+            let store = $rdf.graph();
+            let newRecord = $rdf.sym(newRecordUri);  // Node identified by a URI
+            store.add(newRecord, DCT('title'), $rdf.lit(bin.title));  // A name given to the resource.
+            store.add(newRecord, SIOC('content'), $rdf.lit(bin.body));  // The content of the Item in plain text format.
+            store.add(newRecord, DCT('created'),  $rdf.lit(moment().format(), '', XSD('dateTime')));
+            store.add(newRecord, DCT('creator'),  $rdf.lit(doctorWebId));
+
+            let data = new $rdf.Serializer(store).toN3(store);
+
+            console.log("Record url: " + newRecordUri);
+            solidClient.web.put(newRecordUri, data).then(function (meta) {
+                // view
+                let url = meta.url;
+                console.log("Updated url: " + url);
+            }).catch(function (err) {
+                console.log(err);
+            });
+            // if (url && url.slice(0, 4) != 'http') {
+            //     if (url.indexOf('/') === 0) {
+            //         url = url.slice(1, url.length);
+            //     }
+            //     url = defaultContainer + url.slice(url.lastIndexOf('/') + 1, url.length);
+            // }
+            // // window.location.search = "?view=" + encodeURIComponent(url);
         }).catch(function (err) {
             console.log(err);
         });
@@ -176,8 +197,8 @@ Pastebin = (function () {
 
         var graph = $rdf.graph();
         var thisResource = $rdf.sym('');
-        graph.add(thisResource, vocab.dct('title'), bin.title);
-        graph.add(thisResource, vocab.sioc('content'), bin.body);
+        graph.add(thisResource, DCT('title'), bin.title);
+        graph.add(thisResource, SIOC('content'), bin.body);
         var data = new $rdf.Serializer(graph).toN3(graph);
 
         solidClient.web.put(bin.url, data).then(function (meta) {
@@ -191,7 +212,7 @@ Pastebin = (function () {
 
     // Utility function to parse URL query string values
     var queryVals = (function (a) {
-        if (a === "") return {};
+        if (a == "") return {};
         var b = {};
         for (var i = 0; i < a.length; ++i) {
             var p = a[i].split('=', 2);
@@ -212,6 +233,18 @@ Pastebin = (function () {
     };
 }(this));
 
+$('#test-view').click(function() {
+    let url = 'https://lukatavcer.example.com:8443/med-app/records/record.ttl';
+    solidClient.web.get(url)
+        .then(function(response) {
+            const store = response.parsedGraph();
+            // Print all statements matching resources of type foaf:Post
+            console.log(store.statementsMatching(undefined, RDF('type'), SIOC('Post')))
+        })
+        .catch(function(err) {
+            console.log(err) // error object
+        })
+});
 
 function createContainer(parentUrl, containerName) {
     let options = '';

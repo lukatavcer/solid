@@ -49,7 +49,7 @@ removeFriend = async (webId) => {
 
 
 
-Pastebin = (function () {
+Record = (function () {
     // Default publish location
     // 'https://lukatavcer.example.com:8443/med-app/records/'
     let defaultContainer = BIN_PATH;
@@ -87,10 +87,8 @@ Pastebin = (function () {
             } else if (queryVals['edit'] && queryVals['edit'].length > 0) {
                 load(queryVals['edit'], true);
             } else {
-                console.log('new pastebin form');
-                document.getElementById('submit')
-                    .setAttribute('onclick', 'Pastebin.publish()');
-                document.getElementById('edit').classList.remove('hidden');
+                $('#add-record').attr('onclick', 'Record.publish()');
+                $('#edit').removeClass('hidden');
             }
         }
     }
@@ -116,14 +114,14 @@ Pastebin = (function () {
             }
 
             if (showEditor) {
-                document.getElementById('edit-title').value = bin.title;
-                document.getElementById('edit-body').innerHTML = bin.body;
-                document.getElementById('submit').setAttribute('onclick', 'Pastebin.update()');
-                document.getElementById('edit').classList.remove('hidden');
+                $('#edit-title').val(bin.title);
+                $('#edit-body').html(bin.body);
+                $('#submit').attr('onclick', 'Record.update()');
+                $('#edit').removeClass('hidden');
             } else {
-                document.getElementById('view-title').innerHTML = bin.title;
-                document.getElementById('view-body').innerHTML = bin.body;
-                document.getElementById('view-publish').classList.remove('hidden');
+                $('#view-title').html(bin.title);
+                $('#view-body').html(bin.body);
+                $('#view-publish').removeClass('hidden');
             }
         }).catch(function (err) {
             console.log(err);
@@ -145,10 +143,8 @@ Pastebin = (function () {
         bin.title = $('#edit-title').val();
         bin.body = $('#edit-body').val();
 
-        // Check if patient today's med record exists, if not create new
-        // Else get it and append data to it
+        // Add new medical record/report
         solidClient.web.post(patientRecordsUri).then(function (meta) {
-            // view
             let newRecordUri = patientStorageUri + meta.url;  // Combine storage root with relative new record URI
 
             let store = $rdf.graph();
@@ -164,7 +160,6 @@ Pastebin = (function () {
             solidClient.web.put(newRecordUri, data).then(function (meta) {
                 // view
                 let url = meta.url;
-                console.log("Updated url: " + url);
             }).catch(function (err) {
                 console.log(err);
             });
@@ -178,22 +173,11 @@ Pastebin = (function () {
         }).catch(function (err) {
             console.log(err);
         });
-
-        // solid.auth.fetch(defaultContainer, {
-        //     method: 'POST', // or 'PUT'
-        //     headers:{
-        //         'Content-Type': 'text/turtle',
-        //         'Link': '<http://www.w3.org/ns/ldp#BasicContainer>; rel="type"',
-        //         'Slug':  'logbook'
-        //     }
-        // }).then((res) => {return res;})
-        //   .then((response) => {callback(null);})
-        //   .catch((error) => {callback('Error: '+JSON.stringify(error));});
     }
 
     function update() {
-        bin.title = document.getElementById('edit-title').value;
-        bin.body = document.getElementById('edit-body').value;
+        bin.title = $('#edit-title').val();
+        bin.body = $('#edit-body').val();
 
         var graph = $rdf.graph();
         var thisResource = $rdf.sym('');
@@ -278,7 +262,10 @@ async function containerExists(url) {
 async function loadPatients() {
     const $patientsLoader = $('#patients-loader');
     const $patients = $('#patients');
+    const $selectPatients = $('#select-patient');
+
     $patients.empty();
+    $selectPatients.empty();
     $patientsLoader.show();
 
     const session = await solid.auth.currentSession();
@@ -298,14 +285,18 @@ async function loadPatients() {
         // Display patients
         $patientsLoader.hide();
 
+        // TODO add sort/order by
         patients.forEach(async (patient) => {
             await fetcher.load(patient);
             let fullName = store.any(patient, FOAF('name'));
-            let value = "<span class=\"badge\"> + </span>" + (fullName && fullName.value || patient.value);
+            let nameOrUri = (fullName && fullName.value || patient.value);
+
             $patients.append(
-                $('<li class="list-group-item"></li>')
-                    .html(value)
-                    .prop('title', patient.value)
+                $(`<li class="list-group-item" title="${patient.value}"><span class="badge">+</span>${nameOrUri}</li>`)
+            );
+
+            $selectPatients.append(
+                $(`<option value="${patient.value}">${nameOrUri}</option>`)
             );
         });
     } else {

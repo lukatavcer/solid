@@ -1,8 +1,0 @@
-@prefix rec: <https://lukatavcer.example.com:8443/med-app/records/>.
-@prefix terms: <http://purl.org/dc/terms/>.
-@prefix n: <http://rdfs.org/sioc/ns#>.
-
-rec:
-    terms:title "Test";
-    n:content "asdasdaddsd123".
-

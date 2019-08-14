@@ -67,16 +67,22 @@ async function initApp(userUri) {
     const healthContainer = userUri + '/health';
     const recordsContainer = healthContainer + '/records';
 
+    // Create health container
     await containerExists(healthContainer).then(async function(exists) {
         if (!exists) {
             // solidClient.registerApp();  // TODO
-            createContainer(userUri, "health");
+            await createContainer(userUri, "health");
         }
-        await containerExists(recordsContainer).then(function(exists) {
-            if (!exists) {
-                createContainer(healthContainer, "records");
-            }
-        });
+    });
+
+    // Create ACL files for health container
+    await createACL(healthContainer);
+
+    // Create records container
+    await containerExists(recordsContainer).then(async function(exists) {
+        if (!exists) {
+            await createContainer(healthContainer, "records");
+        }
     });
 }
 
@@ -90,13 +96,18 @@ async function containerExists(url) {
     return exists;
 }
 
-function createContainer(parentUrl, containerName) {
+async function createContainer(parentUrl, containerName) {
     let options = '';
     // let metadata =  `<#${containerName}> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://rdfs.org/sioc/ns#Blog> .`;
 
-    solidClient.web.createContainer(parentUrl, containerName, options).catch(function(err){
-        console.log(err) // error object
-    })
+    await solidClient.web.createContainer(parentUrl, containerName, options)
+        .then(function(solidResponse) {
+            console.log(solidResponse.url)
+            return solidResponse.url
+        }).catch(function(err){
+            console.log(err) // error object
+        });
+    console.log("createContainer finish")
 }
 async function test() {
     let ns = vocab;
@@ -237,9 +248,7 @@ async function test2() {
     // return exists;
 }
 
-async function createACL () {
-    let file = 'https://lukatavcer.example.com:8443/health/.acl';
-
+async function createACL (resource) {
     let content =
 `@prefix  acl:  <http://www.w3.org/ns/auth/acl#>.
 
@@ -252,14 +261,8 @@ async function createACL () {
     acl:default <./>;
     acl:agentGroup  <https://example.com:8443/groups.ttl#Doctor>.`;
 
-
-    // this.fileClient.updateFile (file, content) .then (success => {
-    //     console.log (`Created $ {file} .`)
-    // }, err => console.log (err));
-
-    solidClient.web.put(file, content).then(function (meta) {
-        // view
-        let url = meta.url;
+    await solidClient.web.put(resource+'/.acl', content).then(function (meta) {
+        return meta.url;
     }).catch(function (err) {
         console.log(err);
     });

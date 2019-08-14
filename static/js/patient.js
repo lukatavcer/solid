@@ -53,7 +53,7 @@ async function loadRecords() {
 
                     // Get creators data (name, image...)
                     let doctor = doctorWebId;
-                    let doctorImage = "/favicon.ico";
+                    let doctorImage = "/static/img/doc_default.png";
 
                     if (doctors[doctorWebId]) {
                         doctor = doctors[doctorWebId].name || doctor;
@@ -62,7 +62,10 @@ async function loadRecords() {
                         // Fetch doctor's data
                         await fetcher.load(doctorWebId);
                         doctor = store.any($rdf.sym(doctorWebId), VCARD('fn')).value;
-                        doctorImage = store.any($rdf.sym(doctorWebId), FOAF('img')).value;
+                        let image = store.any($rdf.sym(doctorWebId), FOAF('img'));
+                        if (image) {
+                            doctorImage = image.value;
+                        }
 
                         // Cache doctor to doctors dictionary
                         doctors[doctorWebId] = {

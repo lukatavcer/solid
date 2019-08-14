@@ -3,7 +3,9 @@
 @prefix pro: <./>.
 @prefix n0: <http://xmlns.com/foaf/0.1/>.
 @prefix schem: <http://schema.org/>.
+@prefix foaf: <http://xmlns.com/foaf/0.1/>.
 @prefix n: <http://www.w3.org/2006/vcard/ns#>.
+@prefix n1: <http://www.w3.org/ns/auth/acl#>.
 @prefix ldp: <http://www.w3.org/ns/ldp#>.
 @prefix inbox: </inbox/>.
 @prefix sp: <http://www.w3.org/ns/pim/space#>.
@@ -16,7 +18,13 @@ pro:card a n0:PersonalProfileDocument; n0:maker :me; n0:primaryTopic :me.
     n:fn "Gospod Doktor";
     n:organization-name "Bolnica";
     n:role "Doctor";
+    n1:trustedApp
+            [
+                n1:mode n1:Append, n1:Control, n1:Read, n1:Write;
+                n1:origin <https://example.com:8443>
+            ];
     ldp:inbox inbox:;
+    foaf:img <https://example.com:8443/static/img/doc2.png>;
     sp:preferencesFile </settings/prefs.ttl>;
     sp:storage doc:;
     solid:account doc:;

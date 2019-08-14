@@ -3,7 +3,7 @@
 @prefix XML: <http://www.w3.org/2001/XMLSchema#>.
 
 n:Post
-    terms:created "2019-08-17T12:28:10+02:00"^^XML:dateTime;
-    terms:creator "https://lukatavcer.example.com:8443/profile/card#me";
-    terms:title "Izvid 3 na koncu";
-    n:content "Je ozdravel.".
+    terms:created "2019-08-16T13:11:10+02:00"^^XML:dateTime;
+    terms:creator "https://doctor2.example.com:8443/profile/card#me";
+    terms:title "Izvid 3";
+    n:content "Stanje se izboljšuje.".

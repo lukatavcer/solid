@@ -22,7 +22,7 @@ solid.auth.trackSession(session => {
         $userUrl.text(session.webId);
         $userUrl.attr('href', session.webId);
 
-        initApp(session.webId.split('/profile')[0]);  // TODO this not good, should get app's storage from preferences (data storage)
+        initApp(session.webId);
 
         // Use the user's WebID as default profile
         const $profile = $('#profile');
@@ -63,20 +63,21 @@ $('#view-profile').click(async function loadProfile() {
 });
 
 // Check if user has health data, if not create it
-async function initApp(userUri) {
-    const healthContainer = userUri + '/health';
+async function initApp(userWebId) {
+    // TODO this not the best, should get app's storage from preferences (data storage)
+    const userStorageUri = userWebId.split('/profile')[0];
+    const healthContainer = userStorageUri + '/health';
     const recordsContainer = healthContainer + '/records';
 
     // Create health container
     await containerExists(healthContainer).then(async function(exists) {
         if (!exists) {
             // solidClient.registerApp();  // TODO
-            await createContainer(userUri, "health");
+
+            // Create container health and ACL files for health container
+            await createACL(userStorageUri, userWebId);
         }
     });
-
-    // Create ACL files for health container
-    await createACL(healthContainer);
 
     // Create records container
     await containerExists(recordsContainer).then(async function(exists) {
@@ -102,17 +103,24 @@ async function createContainer(parentUrl, containerName) {
 
     await solidClient.web.createContainer(parentUrl, containerName, options)
         .then(function(solidResponse) {
-            console.log(solidResponse.url)
             return solidResponse.url
         }).catch(function(err){
             console.log(err) // error object
         });
-    console.log("createContainer finish")
 }
 
-async function createACL (resource) {
+async function createACL (userStorageUri, userWebId) {
     let content =
         `@prefix  acl:  <http://www.w3.org/ns/auth/acl#>.
+
+# The owner has all of the access modes allowed
+<#owner>
+    a acl:Authorization;
+    acl:agent <${userWebId}>;
+    acl:accessTo <./>;
+    acl:default <./>;
+    acl:mode
+        acl:Read, acl:Write, acl:Control.
 
 # Group authorization, giving Read/Write access to members of the Doctor group
 <#authorization2>
@@ -123,7 +131,7 @@ async function createACL (resource) {
     acl:default <./>;
     acl:agentGroup  <https://example.com:8443/groups.ttl#Doctor>.`;
 
-    await solidClient.web.put(resource+'/.acl', content).then(function (meta) {
+    await solidClient.web.put(userStorageUri+'/health/.acl', content).then(function (meta) {
         return meta.url;
     }).catch(function (err) {
         console.log(err);
@@ -136,7 +144,7 @@ async function test() {
         .then(function (profile) {
         console.log(profile.name);  // -> 'Alice'
 
-        profile.loadAppRegistry()
+        profile.loadAppRegistry();
         // })
         // .then(function (profile) {
             // The profile has been updated, app registry loaded. Now you can register

@@ -132,10 +132,6 @@ Record = (function () {
         const patientStorageUri = record.patient.split('/profile')[0];  // TODO this not good, should get app's storage from preferences (data storage)
         const patientRecordsUri = patientStorageUri + '/health/records/';
 
-
-        // Check if user already has initialized container health/records, if not create them
-        await initContainer(patientStorageUri);
-
         // Add new medical record/report
         solidClient.web.post(patientRecordsUri).then(function (meta) {
             let newRecordUri = patientStorageUri + meta.url;  // Combine storage root with relative new record URI

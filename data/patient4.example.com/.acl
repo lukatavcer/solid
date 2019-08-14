@@ -1,26 +1,19 @@
-# Root ACL resource for the user account
-@prefix acl: <http://www.w3.org/ns/auth/acl#>.
-@prefix foaf: <http://xmlns.com/foaf/0.1/>.
+@prefix  acl:  <http://www.w3.org/ns/auth/acl#>.
 
-# The homepage is readable by the public
-<#public>
-    a acl:Authorization;
-    acl:agentClass foaf:Agent;
-    acl:accessTo </>;
-    acl:mode acl:Read.
-
-# The owner has full access to every resource in their pod.
-# Other agents have no access rights,
-# unless specifically authorized in other .acl resources.
+# The owner has all of the access modes allowed
 <#owner>
     a acl:Authorization;
     acl:agent <https://patient4.example.com:8443/profile/card#me>;
-    # Optional owner email, to be used for account recovery:
-    acl:agent <mailto:patient4@gmail.com>;
-    # Set the access to the root storage folder itself
-    acl:accessTo </>;
-    # All resources will inherit this authorization, by default
-    acl:default </>;
-    # The owner has all of the access modes allowed
+    acl:accessTo <./>;
+    acl:default <./>;
     acl:mode
         acl:Read, acl:Write, acl:Control.
+
+# Group authorization, giving Read/Write access to members of the Doctor group
+<#authorization2>
+    a               acl:Authorization;
+    acl:accessTo    <./>;
+    acl:mode        acl:Read,
+                    acl:Write;
+    acl:default <./>;
+    acl:agentGroup  <https://example.com:8443/groups.ttl#Doctor>.

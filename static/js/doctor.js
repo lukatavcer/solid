@@ -297,6 +297,9 @@ async function loadPatient(patientWebId) {
                 CurrentPatient.name = profile.name;
                 CurrentPatient.storage = profile.storage[0];
             });
+
+        // Load & show patient's records
+        await loadRecords();
     }
 }
 
@@ -304,6 +307,12 @@ async function loadPatient(patientWebId) {
 const doctors = {};
 
 async function loadRecords() {
+    if (!CurrentPatient.webId) {
+        alert("Izberi pacienta.");
+        $('#btn-load-records').blur();
+        return false;
+    }
+
     const $recordsLoader = $('#records-loader');
     const $records = $('#records');
     $records.empty();

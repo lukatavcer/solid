@@ -54,9 +54,54 @@ app.get('/doctore', function (req, res) {
     res.render('doctor', context);
 });
 
-app.get('/patiente', function (req, res) {
-    logger.info("patient");
-    res.render('patient', {title: 'Pacient'});
+app.get('/patiente', function (req2, res2) {
+    logger.info("GER REQ");
+    const options = {
+        host: 'https://patient4.example.com',
+        path: '/health',
+        port:8443
+    };
+
+    const url = options.host + options.path;
+
+    // let req = https.get(options, function(res) {
+    //     console.log('STATUS: ' + res.statusCode);
+    //     console.log('HEADERS: ' + JSON.stringify(res.headers));
+    //
+    //     // Buffer the body entirely for processing as a whole.
+    //     var bodyChunks = [];
+    //     res.on('data', function(chunk) {
+    //         // You can process streamed parts here...
+    //         bodyChunks.push(chunk);
+    //     }).on('end', function() {
+    //         var body = Buffer.concat(bodyChunks);
+    //         console.log('BODY: ' + body);
+    //         // ...and/or process the entire body here.
+    //     })
+    // });
+    const options2 = {
+        host: 'https://patient4.example.com',
+        path: '/health',
+        port: 8443
+    };
+    https.get('https://lukatavcer.example.com:8443/private/health/', (resp) => {
+        let data = '';
+
+        // A chunk of data has been recieved.
+        resp.on('data', (chunk) => {
+            data += chunk;
+        });
+
+        // The whole response has been received. Print out the result.
+        resp.on('end', () => {
+            console.log(JSON.parse(data).explanation);
+        });
+
+    }).on("error", (err) => {
+        console.log("Error: " + err.message);
+    });
+
+    res2.send('patient');
 });
 
 

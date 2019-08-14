@@ -1,7 +1,7 @@
 const ROOT_NAME = 'example.com';
 const PORT = '8443';
 const ROOT_URL = 'https://' + ROOT_NAME + ':' + PORT;
-const BIN_PATH = 'https://lukatavcer.example.com:8443/med-app/records/';
+const BIN_PATH = 'https://lukatavcer.example.com:8443/health/records/';
 
 $(document).ready(function() {
     loadPatients();
@@ -53,8 +53,8 @@ Record = (function () {
     // Default publish location
     let defaultContainer = BIN_PATH;
     let WebId = 'https://lukatavcer.example.com:8443/';
-    let medAppContainer = WebId + 'med-app/';
-    let recordsContainer = medAppContainer + 'records/';
+    let healthContainer = WebId + 'health/';
+    let recordsContainer = healthContainer + 'records/';
 
     // Record structure
     let record = {
@@ -130,10 +130,10 @@ Record = (function () {
 
         const doctorWebId = session.webId;
         const patientStorageUri = record.patient.split('/profile')[0];  // TODO this not good, should get app's storage from preferences (data storage)
-        const patientRecordsUri = patientStorageUri + '/med-app/records/';
+        const patientRecordsUri = patientStorageUri + '/health/records/';
 
 
-        // Check if user already has initialized container med-app/records, if not create them
+        // Check if user already has initialized container health/records, if not create them
         await initContainer(patientStorageUri);
 
         // Add new medical record/report
@@ -212,7 +212,7 @@ Record = (function () {
 }(this));
 
 $('#test-view').click(function() {
-    let url = 'https://lukatavcer.example.com:8443/med-app/records/record.ttl';
+    let url = 'https://lukatavcer.example.com:8443/health/records/record.ttl';
     solidClient.web.get(url)
         .then(function(response) {
             const store = response.parsedGraph();

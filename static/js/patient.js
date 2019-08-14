@@ -1,19 +1,20 @@
 
 async function loadRecords() {
-    const $recordsLoader = $('#patients-records');
+    const $recordsLoader = $('#records-loader');
     const $records = $('#records');
     $records.empty();
     $recordsLoader.show();
 
     const session = await solid.auth.currentSession();
     if (session) {
-        const url = session.webId.split('/profile')[0] + '/med-app/records/';
+        const url = session.webId.split('/profile')[0] + '/health/records/';
         solidClient.web.get(url)
             .then(function(response) {
                 const store = $rdf.graph();
                 const fetcher = new $rdf.Fetcher(store);
 
-
+                $recordsLoader.hide();
+                // TODO sort by datetime created
                 response.contentsUris.forEach(async (resource) => {
                     let record = $rdf.sym(resource);
                     await fetcher.load(resource);
@@ -38,30 +39,10 @@ async function loadRecords() {
                         `)
                     );
                 });
-                // // Print all statements matching resources of type foaf:Post
-                // console.log(graph.statementsMatching(undefined, RDF('type'), SIOC('Post')))
             })
             .catch(function(err) {
                 console.log(err) // error object
             });
-
-        // Fetch patients into the store
-        // await fetcher.load(url);
-        // const records = store.each(patientGroup, VCARD('hasMember'));  // (subject, predicate, object, document)
-        //
-        // // Display patients
-        // $recordsLoader.hide();
-        //
-        // patients.forEach(async (patient) => {
-        //     await fetcher.load(patient);
-        //     let fullName = store.any(patient, FOAF('name'));
-        //     let value = "<span class=\"badge\"> + </span>" + (fullName && fullName.value || patient.value);
-        //     $patients.append(
-        //         $('<li class="list-group-item"></li>')
-        //             .html(value)
-        //             .prop('title', patient.value)
-        //     );
-        // });
     } else {
         $recordsLoader.hide();
     }

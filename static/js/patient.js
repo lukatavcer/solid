@@ -51,7 +51,7 @@ async function loadRecords() {
                     let created = store.any(SIOC('Post'), DCT('created'), undefined, record).value;
                     let doctorWebId = store.any(SIOC('Post'), DCT('creator'), undefined, record).value;
 
-                    // Get creators data (name, image...)
+                    // Get doctor's data (name, image...)
                     let doctor = doctorWebId;
                     let doctorImage = "/static/img/doc_default.png";
 

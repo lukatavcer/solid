@@ -127,3 +127,40 @@ a {
 .media-heading .date {
   float: right;
 }
+
+.list-group-item .badge {
+  padding: 5px 9px;
+  margin-left: 5px;
+  border: 1px solid;
+}
+
+.list-group-item .badge-def:hover {
+  background-color: #555;
+}
+
+.badge-primary {
+  background-color: #337ab7;
+}
+
+.badge-primary:hover {
+  background-color: #337ab7;
+}
+
+.badge-success {
+  background-color: #5cb85c;
+}
+
+.badge-success:hover {
+  background-color: #449d44;
+  border-color: #398439;
+}
+
+.badge-danger {
+  background-color: #d9534f;
+  border-color: #d43f3a;
+}
+
+.badge-danger:hover {
+  background-color: #c9302c;
+  border-color: #ac2925;
+}

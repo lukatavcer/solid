@@ -266,7 +266,9 @@ async function loadPatients() {
             let nameOrUri = (fullName && fullName.value || patient.value);
 
             $patients.append(
-                $(`<li class="list-group-item" title="${patient.value}"><span class="badge">+</span>${nameOrUri}</li>`)
+                $(`<li class="list-group-item" title="${patient.value}">
+<button type="button" class="badge badge-success">Nov izvid</button>
+<button type="button" class="badge badge-def" onClick="loadPatient('${patient.value}')">Profil</button>${nameOrUri}</li>`)
             );
 
             $selectPatients.append(
@@ -275,5 +277,104 @@ async function loadPatients() {
         });
     } else {
         $patientsLoader.hide();
+    }
+}
+
+let CurrentPatient = {
+    webId: null,
+    storage: null,
+    name: null,
+    img: null,
+};
+
+async function loadPatient(patientWebId) {
+    const session = await solid.auth.currentSession();
+    if (session) {
+        // Get patient's storage location
+        await solidClient.getProfile(patientWebId)
+            .then(function (profile) {
+                CurrentPatient.webId = patientWebId;
+                CurrentPatient.name = profile.name;
+                CurrentPatient.storage = profile.storage[0];
+            });
+    }
+}
+
+// Dictionary of images & other data of doctors that wrote medical records
+const doctors = {};
+
+async function loadRecords() {
+    const $recordsLoader = $('#records-loader');
+    const $records = $('#records');
+    $records.empty();
+    $recordsLoader.show();
+
+    const session = await solid.auth.currentSession();
+    if (session) {
+        const url = CurrentPatient.storage + 'health/records/';
+
+        solidClient.web.get(url)
+            .then(function(response) {
+                const store = $rdf.graph();
+                const fetcher = new $rdf.Fetcher(store);
+
+                $recordsLoader.hide();
+                // TODO sort by datetime created
+                response.contentsUris.forEach(async (resource) => {
+                    let record = $rdf.sym(resource);
+                    await fetcher.load(resource);
+                    let title = store.any(SIOC('Post'), DCT('title'), undefined, record).value;
+                    let content = store.any(SIOC('Post'), SIOC('content'), undefined, record).value;
+                    let created = store.any(SIOC('Post'), DCT('created'), undefined, record).value;
+                    let doctorWebId = store.any(SIOC('Post'), DCT('creator'), undefined, record).value;
+
+                    // Get doctor's data (name, image...)
+                    let doctor = doctorWebId;
+                    let doctorImage = "/static/img/doc_default.png";
+
+                    if (doctors[doctorWebId]) {
+                        doctor = doctors[doctorWebId].name || doctor;
+                        doctorImage = doctors[doctorWebId].image || doctorImage;
+                    } else {
+                        // Fetch doctor's data
+                        await fetcher.load(doctorWebId);
+                        doctor = store.any($rdf.sym(doctorWebId), VCARD('fn')).value;
+                        let image = store.any($rdf.sym(doctorWebId), FOAF('img'));
+                        if (image) {
+                            doctorImage = image.value;
+                        }
+
+                        // Cache doctor to doctors dictionary
+                        doctors[doctorWebId] = {
+                            name: doctor,
+                            image: doctorImage
+                        }
+                    }
+
+                    $records.append(
+                        $(`
+                        <div class="media">
+                            <div class="media-left">
+                                <a href="#">
+                                    <img class="media-object" data-src="favicon.ico" alt="64x64" src="${doctorImage}" data-holder-rendered="true" style="width: 64px; height: 64px;">
+                                </a>
+                            </div>
+                            <div class="media-body">
+                                <h4 class="media-heading" style="margin-bottom: 10px;">
+                                    <span class="font-bold">${title}</span> - ${doctor}
+                                    <span class="date">(${moment(created).format('d. M. YYYY, h:mm')})</span>
+                                </h4>
+                                ${content}
+                            </div>
+                        </div>
+                        `)
+                    );
+                });
+            })
+            .catch(function(err) {
+                console.log(err) // error object
+            });
+    } else {
+        $recordsLoader.hide();
     }
 }

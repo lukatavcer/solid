@@ -1,0 +1,10 @@
+@prefix n: <http://rdfs.org/sioc/ns#>.
+@prefix terms: <http://purl.org/dc/terms/>.
+@prefix XML: <http://www.w3.org/2001/XMLSchema#>.
+
+n:post
+    terms:created "2019-08-14T17:41:41+02:00"^^XML:dateTime;
+    terms:creator "https://lukatavcer.example.com:8443/profile/card#me";
+    terms:title "Nov izvid";
+    n:content
+        "Test sporocilo izivda tran, ki jo lahko obi\u0161\u010dejo samo zdravniki ".

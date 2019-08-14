@@ -15,7 +15,7 @@ pro:card a n0:PersonalProfileDocument; n0:maker :me; n0:primaryTopic :me.
     a schem:Person, n0:Person;
     n1:trustedApp
             [
-                n1:mode n1:Append, n1:Read, n1:Write;
+                n1:mode n1:Append, n1:Control, n1:Read, n1:Write;
                 n1:origin <https://example.com:8443>
             ];
     ldp:inbox inbox:;

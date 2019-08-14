@@ -128,13 +128,21 @@ Record = (function () {
         record.body = $('#edit-body').val();
         record.patient = $('#select-patient').val();
 
+
+        let patientStorageUri = null;
+
+        // Get patient's profile to get his storage location
+        await solidClient.getProfile(record.patient)
+            .then(function (profile) {
+                patientStorageUri = profile.storage[0];
+            });
+
+        const patientRecordsUri = patientStorageUri + 'health/records/';
         const doctorWebId = session.webId;
-        const patientStorageUri = record.patient.split('/profile')[0];  // TODO this not good, should get app's storage from preferences (data storage)
-        const patientRecordsUri = patientStorageUri + '/health/records/';
 
         // Add new medical record/report
         solidClient.web.post(patientRecordsUri).then(function (meta) {
-            let newRecordUri = patientStorageUri + meta.url;  // Combine storage root with relative new record URI
+            let newRecordUri = patientStorageUri.slice(0, -1) + meta.url;  // Combine storage root with relative new record URI
 
             let store = $rdf.graph();
             // let newRecord = $rdf.sym(newRecordUri);  // Node identified by a URI
@@ -146,9 +154,7 @@ Record = (function () {
 
             let data = new $rdf.Serializer(store).toN3(store);
 
-            console.log("Record url: " + newRecordUri);
             solidClient.web.put(newRecordUri, data).then(function (meta) {
-                // view
                 let url = meta.url;
             }).catch(function (err) {
                 console.log(err);

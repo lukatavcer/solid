@@ -11,17 +11,28 @@ const SIOC = vocab.sioc;
 const XSD = vocab.xsd;
 const ACL = vocab.acl;
 
+const LoggedUser = {
+    webId: null,
+    name: null,
+    storage: null,
+    clear: function clear() {
+        this.webId = null;
+        this.name = null;
+        this.storage = null;
+    }
+};
+
 // Update components to match the user's login status
 solid.auth.trackSession(session => {
     let loggedIn = !!session;
-    $('#login').toggle(!loggedIn);
-    $('#logout').toggle(loggedIn);
+
     const $userUrl = $('#user');
     if (loggedIn) {
         $('#loggedIn').toggle(true);
         $userUrl.text(session.webId);
         $userUrl.attr('href', session.webId);
 
+        LoggedUser.webId = session.webId;
         initApp(session.webId);
 
         // Use the user's WebID as default profile
@@ -29,8 +40,6 @@ solid.auth.trackSession(session => {
         if (!$profile.val()) {
             $profile.val(session.webId);
         }
-    } else {
-        $('#loggedIn').toggle(false);
     }
 });
 
@@ -64,9 +73,13 @@ $('#view-profile').click(async function loadProfile() {
 
 // Check if user has health data, if not create it
 async function initApp(userWebId) {
-    // TODO this not the best, should get app's storage from preferences (data storage)
-    const userStorageUri = userWebId.split('/profile')[0];
-    const healthContainer = userStorageUri + '/health';
+    await solidClient.getProfile(userWebId)
+        .then(function (profile) {
+            LoggedUser.name = profile.name;
+            LoggedUser.storage = profile.storage[0];
+        });
+
+    const healthContainer = LoggedUser.storage + 'health';
     const recordsContainer = healthContainer + '/records';
 
     // Create health container
@@ -75,7 +88,7 @@ async function initApp(userWebId) {
             // solidClient.registerApp();  // TODO
 
             // Create container health and ACL files for health container
-            await createACL(userStorageUri, userWebId);
+            await createACL(LoggedUser.storage, LoggedUser.webId);
         }
     });
 
@@ -131,7 +144,7 @@ async function createACL (userStorageUri, userWebId) {
     acl:default <./>;
     acl:agentGroup  <https://example.com:8443/groups.ttl#Doctor>.`;
 
-    await solidClient.web.put(userStorageUri+'/health/.acl', content).then(function (meta) {
+    await solidClient.web.put(userStorageUri+'health/.acl', content).then(function (meta) {
         return meta.url;
     }).catch(function (err) {
         console.log(err);
@@ -142,13 +155,11 @@ async function createACL (userStorageUri, userWebId) {
 async function test() {
     solidClient.getProfile('https://lukatavcer.example.com:8443/profile/card#me')
         .then(function (profile) {
-        console.log(profile.name);  // -> 'Alice'
+            console.log(profile.name);
 
-        profile.loadAppRegistry();
-        // })
-        // .then(function (profile) {
-            // The profile has been updated, app registry loaded. Now you can register
-            // apps with is.
+            profile.loadAppRegistry();
+
+            // The profile has been updated, app registry loaded. Now you can register apps with is.
             let options = {
                 name: 'Health application',
                 shortdesc: 'A health app',
@@ -169,7 +180,7 @@ async function test() {
             return profile.appsForType(VCARD('AddressBook'))
         })
         .then(function (registrationResults) {
-            let app = registrationResults[0]
+            let app = registrationResults[0];
             console.log(app.name);  // -> 'Contact Manager'
             console.log(app.shortdesc);  // -> ...
             console.log(app.redirectTemplateUri);

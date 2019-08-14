@@ -1,5 +1,14 @@
 @prefix  acl:  <http://www.w3.org/ns/auth/acl#>.
 
+# The owner has all of the access modes allowed
+<#owner>
+    a acl:Authorization;
+    acl:agent <https://lukatavcer.example.com:8443/profile/card#me>;
+    acl:accessTo <./>;
+    acl:default <./>;
+    acl:mode
+        acl:Read, acl:Write, acl:Control.
+
 # Group authorization, giving Read/Write access to members of the Doctor group
 <#authorization2>
     a               acl:Authorization;

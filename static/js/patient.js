@@ -7,7 +7,7 @@ async function loadRecords() {
 
     const session = await solid.auth.currentSession();
     if (session) {
-        const url = session.webId.split('/profile')[0] + '/health/records/';
+        const url = LoggedUser.storage + 'health/records/';
         solidClient.web.get(url)
             .then(function(response) {
                 const store = $rdf.graph();

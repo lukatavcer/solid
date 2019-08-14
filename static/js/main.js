@@ -22,28 +22,6 @@ const LoggedUser = {
     }
 };
 
-// Update components to match the user's login status
-solid.auth.trackSession(session => {
-    let loggedIn = !!session;
-
-    const $userUrl = $('#user');
-    if (loggedIn) {
-        $('#loggedIn').toggle(true);
-        $userUrl.text(session.webId);
-        $userUrl.attr('href', session.webId);
-
-        LoggedUser.webId = session.webId;
-        initApp(session.webId);
-
-        // Use the user's WebID as default profile
-        const $profile = $('#profile');
-        if (!$profile.val()) {
-            $profile.val(session.webId);
-        }
-    }
-});
-
-
 $('#view-profile').click(async function loadProfile() {
     // Set up a local data store and associated data fetcher
     const store = $rdf.graph();

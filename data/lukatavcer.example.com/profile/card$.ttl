@@ -7,6 +7,7 @@
 @prefix n1: <http://www.w3.org/ns/auth/acl#>.
 @prefix cert: <http://www.w3.org/ns/auth/cert#>.
 @prefix XML: <http://www.w3.org/2001/XMLSchema#>.
+@prefix foaf: <http://xmlns.com/foaf/0.1/>.
 @prefix ldp: <http://www.w3.org/ns/ldp#>.
 @prefix inbox: </inbox/>.
 @prefix sp: <http://www.w3.org/ns/pim/space#>.
@@ -17,6 +18,7 @@ pro:card a n0:PersonalProfileDocument; n0:maker :me; n0:primaryTopic :me.
 :me
     a schem:Person, n0:Person;
     n:fn "Luka Tav\u010der";
+    foaf:img <https://media.licdn.com/dms/image/C5603AQGgHnTnBFchYw/profile-displayphoto-shrink_200_200/0?e=1571270400&v=beta&t=O1mIcRE5vagMci8QuYrygari6YvbPHsWI1-e24IECGs>;
     n1:trustedApp
             [
                 n1:mode n1:Append, n1:Control, n1:Read, n1:Write;

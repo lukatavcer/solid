@@ -3,10 +3,31 @@ const PORT = '8443';
 const ROOT_URL = 'https://' + ROOT_NAME + ':' + PORT;
 const BIN_PATH = 'https://lukatavcer.example.com:8443/health/records/';
 
-$(document).ready(function() {
-    loadPatients();
-});
+// Update components to match the user's login status
+solid.auth.trackSession(async function(session) {
+    let loggedIn = !!session;
 
+    const $userUrl = $('#user');
+    if (loggedIn) {
+        $('#loggedIn').toggle(true);
+        $userUrl.text(session.webId);
+        $userUrl.attr('href', session.webId);
+
+        LoggedUser.webId = session.webId;
+
+        // Initialize app data
+        await initApp(session.webId);
+
+        // Load patient's health records
+        await loadPatients();
+
+        // Use the user's WebID as default profile
+        const $profile = $('#profile');
+        if (!$profile.val()) {
+            $profile.val(session.webId);
+        }
+    }
+});
 
 $('#view').click(async function loadProfile() {
     // Set up a local data store and associated data fetcher
@@ -34,20 +55,6 @@ $('#view').click(async function loadProfile() {
                     .click(loadProfile)));
     });
 });
-
-fetchFriends = async () => {
-    console.log('Fetching Friends')
-};
-
-addFriend = async (webId) => {
-    console.log(`Adding ${webId}`);
-};
-
-removeFriend = async (webId) => {
-    console.log(`Removing ${webId}`);
-};
-
-
 
 Record = (function () {
     // Default publish location

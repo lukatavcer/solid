@@ -36,10 +36,14 @@
         </p>
 
         <div class="row">
-            <div class="col-xs-12">
+            <div class="col-xs-6">
                 <label for="profile">Profil:</label>
-                <input id="profile">
-                <button id="view-profile">Poglej profil</button>
+                <div class="input-group">
+                    <input type="text" class="form-control" id="profile" placeholder="Search for...">
+                    <span class="input-group-btn">
+                        <button class="btn btn-default" type="button" id="view-profile">Poglej profil</button>
+                    </span>
+                </div>
             </div>
         </div>
 
@@ -66,13 +70,14 @@
                     <li>Doktor klikne na pacienta in pogleda njegov profil</li>
                     <li>Seznam pacientovih izvidov</li>
                     <li>Urejanje že obstoječih izvidov</li>
+                    <li>Dodaj zdravnikovo sliko ob izvidu</li>
                 </ul>
             </div>
         </div>
     </section>
 
     <section>
-        <h2>Podatki o strežniku</h2>
+        <h3>Strežnik</h3>
         <strong>Ime:</strong> example.com<br/>
         <strong>Platforma:</strong> <a href="https://www.w3.org/community/solid/wiki/">Solid 5.1.6</a>
     </section>
@@ -83,5 +88,6 @@
 <script src="/static/js/rdflib.min.js"></script>
 <script src="/static/js/solid.min.js"></script>
 <script src="/static/js/main.js"></script>
+<script src="/static/js/home.js"></script>
 </body>
 </html>

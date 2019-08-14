@@ -119,3 +119,11 @@ a {
     transform: translateY(-20px);
   }
 }
+
+.font-bold {
+  font-weight: 600;
+}
+
+.media-heading .date {
+  float: right;
+}

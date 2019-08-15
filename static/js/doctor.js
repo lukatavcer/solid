@@ -1,6 +1,5 @@
 const ROOT_NAME = 'example.com';
 const PORT = '8443';
-const ROOT_URL = 'https://' + ROOT_NAME + ':' + PORT;
 const BIN_PATH = 'https://lukatavcer.example.com:8443/health/records/';
 
 // Update components to match the user's login status
@@ -244,13 +243,23 @@ async function loadPatients() {
 let CurrentPatient = {
     webId: null,
     storage: null,
-    name: null,
-    image: null,
-    gender: null,
-    birthDate: null,
+    name: '',
+    image: '/static/img/doc_default.png',
+    gender: '/',
+    birthDate: '/',
+    clear: function() {
+        this.webId = null;
+        this.storage = null;
+        this.name = '';
+        this.image = '/static/img/doc_default.png';
+        this.gender = '/';
+        this.birthDate = '/';
+    }
 };
 
 async function loadPatient(patientWebId) {
+    CurrentPatient.clear();
+
     const session = await solid.auth.currentSession();
     if (session) {
         // Get patient's storage location
@@ -259,26 +268,21 @@ async function loadPatient(patientWebId) {
                 let patient = $rdf.sym(patientWebId);
 
                 CurrentPatient.webId = patientWebId;
-                CurrentPatient.name = profile.name;
-                CurrentPatient.image = profile.picture || '/static/img/doc_default.png';
                 CurrentPatient.storage = profile.storage[0];
 
                 let gender = profile.parsedGraph.any(patient, FOAF('gender'));
                 let birthDate = profile.parsedGraph.any(patient, DBO('birthDate'));
 
-                if (gender) {
-                    CurrentPatient.gender = gender.value;
-                    $('#profile-gender').text(CurrentPatient.gender);
-                }
+                if (profile.name)  CurrentPatient.name = profile.name;
+                if (profile.picture)  CurrentPatient.image = profile.picture;
+                if (gender) CurrentPatient.gender = gender.value;
+                if (birthDate) CurrentPatient.birthDate = moment(birthDate.value).format('D. M. YYYY');
 
-
-                if (birthDate) {
-                    CurrentPatient.birthDate = moment(birthDate.value).format('D. M. YYYY');
-                    $('#profile-birth-date').text(CurrentPatient.birthDate);
-                }
-
+                // Show profile data
                 $('#profile-name').text(CurrentPatient.name);
                 $('#profile-img').prop('src', CurrentPatient.image);
+                $('#profile-gender').text(CurrentPatient.gender);
+                $('#profile-birth-date').text(CurrentPatient.birthDate);
             });
 
         // Load & show patient's records

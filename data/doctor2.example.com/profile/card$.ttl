@@ -1,36 +1,29 @@
 @prefix : <#>.
 @prefix solid: <http://www.w3.org/ns/solid/terms#>.
 @prefix pro: <./>.
-@prefix schem: <http://schema.org/>.
 @prefix foaf: <http://xmlns.com/foaf/0.1/>.
+@prefix schem: <http://schema.org/>.
 @prefix n: <http://www.w3.org/2006/vcard/ns#>.
-@prefix n1: <http://www.w3.org/ns/auth/acl#>.
 @prefix ldp: <http://www.w3.org/ns/ldp#>.
 @prefix inbox: </inbox/>.
 @prefix sp: <http://www.w3.org/ns/pim/space#>.
+@prefix doc: </>.
 @prefix dbo: <http://dbpedia.org/ontology/>.
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#>.
-@prefix doc: </>.
 
 pro:card a foaf:PersonalProfileDocument; foaf:maker :me; foaf:primaryTopic :me.
 
 :me
     a schem:Person, foaf:Person;
-    n:fn "Gospod Doktor";
-    n:organization-name "Bolnica";
+    n:fn "Alojzij Travnikar";
     n:role "Doctor";
-    n1:trustedApp
-            [
-                n1:mode n1:Append, n1:Control, n1:Read, n1:Write;
-                n1:origin <https://example.com:8443>
-            ];
     ldp:inbox inbox:;
     sp:preferencesFile </settings/prefs.ttl>;
     sp:storage doc:;
     solid:account doc:;
     solid:privateTypeIndex </settings/privateTypeIndex.ttl>;
     solid:publicTypeIndex </settings/publicTypeIndex.ttl>;
-    foaf:name "Doktor Doktorovic";
-    dbo:birthDate "1979-01-05"^^xsd:date;
+    foaf:img <https://example.com:8443/static/img/doc1.jpg>;
+    dbo:birthDate "1968-09-27"^^xsd:date;
     foaf:gender "moški"@sl;
-    foaf:img <https://example.com:8443/static/img/doc2.png>.
+    foaf:name "Slavko Travnikar".

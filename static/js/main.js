@@ -13,14 +13,14 @@ const ACL = vocab.acl;
 
 const LoggedUser = {
     webId: null,
-    name: null,
     storage: null,
-    image: null,
+    name: '',
+    image: '/static/img/doc_default.png',
     clear: function clear() {
         this.webId = null;
-        this.name = null;
         this.storage = null;
-        this.image = null;
+        this.name = '';
+        this.image = '/static/img/doc_default.png';
     }
 };
 
@@ -28,8 +28,8 @@ const LoggedUser = {
 async function initApp(userWebId) {
     await solidClient.getProfile(userWebId)
         .then(function (profile) {
-            LoggedUser.name = profile.name;
-            LoggedUser.image = profile.picture;
+            if (profile.name) LoggedUser.name = profile.name;
+            if (profile.picture) LoggedUser.image = profile.picture;
             LoggedUser.storage = profile.storage[0];
         });
 

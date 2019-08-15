@@ -47,9 +47,12 @@
                             <button class="btn btn-default" type="button" id="view-profile">Poglej profil</button>
                         </span>
                     </div>
+                    <div class="alert alert-danger" id="profile-search-error" hidden>
+                        Opa, nekaj je šlo narobe. Morda profil ne obstaja?
+                    </div>
                 </form>
 
-                <div class="row" style="margin-top: 20px;">
+                <div class="row" style="margin-top: 20px;" id="profile-data" hidden>
                     <div class="col-xs-3">
                         <img id="profile-img" src="/static/img/doc_default.png" style="width: 100px; height: 100px;">
                     </div>
@@ -57,8 +60,8 @@
                         <label>Ime:</label> <span id="profile-name"></span> <br />
                         <label>Spol:</label> <span id="profile-gender"></span> <br />
                         <label>Datum rojstva:</label> <span id="profile-birth-date"></span> <br />
-                        <label>Prijatelji:</label> <br />
-                        <ul id="profile-friends"></ul>
+<!--                        <label>Prijatelji:</label> <br />-->
+<!--                        <ul id="profile-friends"></ul>-->
                     </div>
                 </div>
             </div>

@@ -133,6 +133,7 @@ a {
   margin-left: 5px;
   border: 1px solid;
 }
+#view-profile:focus,
 .list-group-item .badge:active,
 .list-group-item .badge:focus {
   outline: none;
@@ -179,4 +180,8 @@ p.lead {
 
 .full-width {
   width: 100%;
+}
+
+#profile-search-error {
+  padding: 7px 15px;
 }

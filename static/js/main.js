@@ -24,6 +24,10 @@ const LoggedUser = {
     }
 };
 
+
+// Dictionary of doctors data and images that wrote medical records
+const doctors = {};
+
 // Check if user has health data, if not create it
 async function initApp(userWebId) {
     await solidClient.getProfile(userWebId)
@@ -139,4 +143,110 @@ async function test() {
             console.log(app.shortdesc);  // -> ...
             console.log(app.redirectTemplateUri);
         });
+}
+
+async function _loadRecords(url) {
+    const $recordsLoader = $('#records-loader');
+    const $records = $('#records');
+    $records.empty();
+    $recordsLoader.show();
+
+    const session = await solid.auth.currentSession();
+
+    if (session) {
+        // Array of records, later used to sort them by datetime created
+        const records = [];
+
+        solidClient.web.get(url)
+            .then(async function(response) {
+                const store = $rdf.graph();
+                const fetcher = new $rdf.Fetcher(store);
+
+                async function fetchRecords() {
+                    for (let i=0; i<response.contentsUris.length; i++) {
+                        let resource = response.contentsUris[i];
+
+                        let record = $rdf.sym(resource);
+                        await fetcher.load(resource);
+
+                        let title = store.any(SIOC('Post'), DCT('title'), undefined, record).value;
+                        let content = store.any(SIOC('Post'), SIOC('content'), undefined, record).value;
+                        let created = store.any(SIOC('Post'), DCT('created'), undefined, record).value;
+                        let doctorWebId = store.any(SIOC('Post'), DCT('creator'), undefined, record).value;
+
+                        // Get doctor's data (name, image...)
+                        let doctor = doctorWebId;
+                        let doctorImage = "/static/img/doc_default.png";
+
+                        if (doctors[doctorWebId]) {
+                            doctor = doctors[doctorWebId].name || doctor;
+                            doctorImage = doctors[doctorWebId].image || doctorImage;
+                        } else {
+                            // Fetch doctor's data
+                            await fetcher.load(doctorWebId);
+                            let doctorName = store.any($rdf.sym(doctorWebId), FOAF('name')).value;
+                            let image = store.any($rdf.sym(doctorWebId), FOAF('img'));
+                            if (image) {
+                                doctorImage = image.value;
+                            }
+                            if (doctorName) {
+                                doctor = doctorName;
+                            }
+                            // Cache doctor to doctors dictionary
+                            doctors[doctorWebId] = {
+                                name: doctor,
+                                image: doctorImage
+                            }
+                        }
+                        records.push(
+                            {
+                                title: title,
+                                doctor: doctor,
+                                doctorImage: doctorImage,
+                                content: content,
+                                created: created,
+                            }
+                        );
+                    }
+                }
+
+                // Get all records from patient's data pod
+                await fetchRecords();
+
+                // Sort records by datetime created
+                records.sort(function compare(a, b) {
+                    if (a.created > b.created)
+                        return a;
+                    return b;
+                });
+
+                $recordsLoader.hide();
+
+                $.each(records, function(index, r) {
+                    $records.append(
+                        $(`
+                        <div class="media">
+                            <div class="media-left">
+                                <a href="#">
+                                    <img class="media-object" data-src="favicon.ico" alt="64x64" src="${r.doctorImage}" data-holder-rendered="true" style="width: 64px; height: 64px;">
+                                </a>
+                            </div>
+                            <div class="media-body">
+                                <h4 class="media-heading" style="margin-bottom: 10px;">
+                                    <span class="font-bold">${r.title}</span> - ${r.doctor}
+                                    <span class="date">(${moment(r.created).format('D. M. YYYY, h:mm')})</span>
+                                </h4>
+                                ${r.content}
+                            </div>
+                        </div>
+                        `)
+                    );
+                });
+            })
+            .catch(function(err) {
+                console.log(err) // error object
+            });
+    } else {
+        $recordsLoader.hide();
+    }
 }

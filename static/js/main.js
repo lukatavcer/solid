@@ -1,9 +1,9 @@
-const FOAF = $rdf.Namespace('http://xmlns.com/foaf/0.1/');
-// const VCARD = $rdf.Namespace("http://www.w3.org/2006/vcard/ns#");
+const DBO = $rdf.Namespace('http://dbpedia.org/ontology/');
 
 const solidClient = SolidClient;
 const vocab = solidClient.vocab;
 
+const FOAF = vocab.foaf;
 const RDF = vocab.rdf;
 const VCARD = vocab.vcard;
 const DCT = vocab.dct;
@@ -15,45 +15,21 @@ const LoggedUser = {
     webId: null,
     name: null,
     storage: null,
+    image: null,
     clear: function clear() {
         this.webId = null;
         this.name = null;
         this.storage = null;
+        this.image = null;
     }
 };
-
-$('#view-profile').click(async function loadProfile() {
-    // Set up a local data store and associated data fetcher
-    const store = $rdf.graph();
-    const fetcher = new $rdf.Fetcher(store);
-
-    // Load the person's data into the store
-    const person = $('#profile').val();
-    await fetcher.load(person);
-
-    // Display their details
-    const fullName = store.any($rdf.sym(person), FOAF('name'));
-    $('#fullName').text(fullName && fullName.value);
-
-    // Display their friends
-    const friends = store.each($rdf.sym(person), FOAF('knows'));
-    $('#friends').empty();
-    friends.forEach(async (friend) => {
-        await fetcher.load(friend);
-        const fullName = store.any(friend, FOAF('name'));
-        $('#friends').append(
-            $('<li>').append(
-                $('<a>').text(fullName && fullName.value || friend.value)
-                    .click(() => $('#profile').val(friend.value))
-                    .click(loadProfile)));
-    });
-});
 
 // Check if user has health data, if not create it
 async function initApp(userWebId) {
     await solidClient.getProfile(userWebId)
         .then(function (profile) {
             LoggedUser.name = profile.name;
+            LoggedUser.image = profile.picture;
             LoggedUser.storage = profile.storage[0];
         });
 

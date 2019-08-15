@@ -133,6 +133,10 @@ a {
   margin-left: 5px;
   border: 1px solid;
 }
+.list-group-item .badge:active,
+.list-group-item .badge:focus {
+  outline: none;
+}
 
 .list-group-item .badge-def:hover {
   background-color: #555;
@@ -163,4 +167,16 @@ a {
 .badge-danger:hover {
   background-color: #c9302c;
   border-color: #ac2925;
+}
+
+h1 {
+  font-size: 33px;
+}
+
+p.lead {
+  font-size: 18px;
+}
+
+.full-width {
+  width: 100%;
 }

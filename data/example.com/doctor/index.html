@@ -36,22 +36,37 @@
             <div class="col-xs-6">
                 <div class="row">
                     <div class="col-xs-12">
-                        <h2 style="margin-bottom: 25px;">Profil</h2>
+                        <h3 style="margin-bottom: 25px;">Profil</h3>
                     </div>
                 </div>
 
-                <div class="input-group">
-                    <input type="text" class="form-control" id="profile" placeholder="Search for...">
-                    <span class="input-group-btn">
-                        <button class="btn btn-default" type="button" id="view-profile">Poglej profil</button>
-                    </span>
+                <form action="#" id="profile-search-form">
+                    <div class="input-group full-width">
+                        <input type="text" class="form-control" id="profile-search" placeholder="Vpiši WebId..." required>
+                        <span class="input-group-btn">
+                            <button class="btn btn-default" type="button" id="view-profile">Poglej profil</button>
+                        </span>
+                    </div>
+                </form>
+
+                <div class="row" style="margin-top: 20px;">
+                    <div class="col-xs-3">
+                        <img id="profile-img" src="/static/img/doc_default.png" style="width: 100px; height: 100px;">
+                    </div>
+                    <div class="col-xs-9" style="padding: 15px 10px;">
+                        <label>Ime:</label> <span id="profile-name"></span> <br />
+                        <label>Spol:</label> <span id="profile-gender"></span> <br />
+                        <label>Datum rojstva:</label> <span id="profile-birth-date"></span> <br />
+                        <label>Prijatelji:</label> <br />
+                        <ul id="profile-friends"></ul>
+                    </div>
                 </div>
             </div>
 
             <div class="col-xs-6">
                 <div class="row" style="margin-bottom: 15px;">
                     <div class="col-xs-12">
-                        <h2 class="d-inline">Pacienti</h2>
+                        <h3 class="d-inline">Pacienti</h3>
                         <button type="button" class="btn btn-primary ml-1" id="btn-load-patients" onClick="loadPatients()">
                             Osveži
                         </button>
@@ -77,7 +92,7 @@
         <div class="col-xs-6">
             <div class="row">
                 <div class="col-xs-12">
-                    <h2>Nov izvid</h2>
+                    <h3>Nov izvid</h3>
                 </div>
             </div>
             <div class="row">
@@ -90,22 +105,24 @@
 
             <div class="row">
                 <div class="col-xs-12 hidden" id="edit">
-                    <div class="form-group">
-                        <label>Pacient</label>
-                        <select class="form-control" id="select-patient"></select>
-                    </div>
-                    <div class="form-group">
-<!--                        <label>Naslov</label>-->
-                        <input type="text" id="edit-title" class="form-control" placeholder="Naslov">
-                    </div>
-                     <!--<div class="form-group">
-                        <label>Zdravila</label>
-                        <input type="text" id="edit-date" class="form-control" placeholder="Zdravila">
-                    </div>-->
-                    <div class="form-group">
-                        <textarea id="edit-body" class="form-control" rows="8" placeholder="Napiši izvid..."></textarea>
-                    </div>
-                    <button id="add-record" class="btn btn-success">Dodaj</button>
+                    <form method="post" action="#" id="publish-form">
+                        <div class="form-group">
+                            <label>Pacient</label>
+                            <select class="form-control" id="select-patient" required></select>
+                        </div>
+                        <div class="form-group">
+    <!--                        <label>Naslov</label>-->
+                            <input type="text" id="edit-title" class="form-control" placeholder="Naslov" required>
+                        </div>
+                         <!--<div class="form-group">
+                            <label>Zdravila</label>
+                            <input type="text" id="edit-date" class="form-control" placeholder="Zdravila">
+                        </div>-->
+                        <div class="form-group">
+                            <textarea id="edit-body" class="form-control" rows="8" placeholder="Napiši izvid..." required></textarea>
+                        </div>
+                        <button id="add-record" class="btn btn-success">Dodaj</button>
+                    </form>
                 </div>
             </div>
         </div>
@@ -113,7 +130,7 @@
         <div class="col-xs-6">
             <div class="row" style="margin-bottom: 25px;">
                 <div class="col-xs-12">
-                    <h2 class="d-inline">Izvidi</h2>
+                    <h3 class="d-inline">Izvidi</h3>
                     <button type="button" class="btn btn-primary ml-1" id="btn-load-records" onClick="loadRecords()">
                         Osveži
                     </button>
@@ -129,15 +146,6 @@
                     <ul id="records" class="list-group"></ul>
                 </div>
             </div>
-        </div>
-    </div>
-
-    <div class="row">
-        <div class="col-xs-12">
-            <h2 class="d-inline">Test data</h2>
-            <button type="button" class="btn btn-primary ml-1" id="test-view">
-                Test view
-            </button>
         </div>
     </div>
 </div>

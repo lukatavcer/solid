@@ -61,12 +61,14 @@ async function loadRecords() {
                     } else {
                         // Fetch doctor's data
                         await fetcher.load(doctorWebId);
-                        doctor = store.any($rdf.sym(doctorWebId), VCARD('fn')).value;
+                        let doctorName = store.any($rdf.sym(doctorWebId), FOAF('name')).value;
                         let image = store.any($rdf.sym(doctorWebId), FOAF('img'));
                         if (image) {
                             doctorImage = image.value;
                         }
-
+                        if (doctorName) {
+                            doctor = doctorName;
+                        }
                         // Cache doctor to doctors dictionary
                         doctors[doctorWebId] = {
                             name: doctor,
@@ -85,7 +87,7 @@ async function loadRecords() {
                             <div class="media-body">
                                 <h4 class="media-heading" style="margin-bottom: 10px;">
                                     <span class="font-bold">${title}</span> - ${doctor}
-                                    <span class="date">(${moment(created).format('d. M. YYYY, h:mm')})</span>
+                                    <span class="date">(${moment(created).format('D. M. YYYY, h:mm')})</span>
                                 </h4>
                                 ${content}
                             </div>

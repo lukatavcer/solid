@@ -1,9 +1,0 @@
-@prefix n: <http://rdfs.org/sioc/ns#>.
-@prefix terms: <http://purl.org/dc/terms/>.
-@prefix XML: <http://www.w3.org/2001/XMLSchema#>.
-
-n:post
-    terms:created "2019-08-14T18:55:21+02:00"^^XML:dateTime;
-    terms:creator "https://lukatavcer.example.com:8443/profile/card#me";
-    terms:title "123123123131";
-    n:content "123123".

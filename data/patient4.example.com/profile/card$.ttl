@@ -3,6 +3,8 @@
 @prefix pim: <http://www.w3.org/ns/pim/space#>.
 @prefix schema: <http://schema.org/>.
 @prefix ldp: <http://www.w3.org/ns/ldp#>.
+@prefix dbo: <http://dbpedia.org/ontology/>.
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#>.
 
 <>
     a foaf:PersonalProfileDocument ;
@@ -14,7 +16,9 @@
     a schema:Person ;
 
     foaf:name "Jan Poklič" ;
-
+    foaf:img <https://example.com:8443/static/img/patient4.jpg>;
+    dbo:birthDate "1996-08-01"^^xsd:date;
+    foaf:gender "moški"@sl;
     solid:account </> ;  # link to the account uri
     pim:storage </> ;    # root storage
 

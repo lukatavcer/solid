@@ -1,7 +1,6 @@
 @prefix : <#>.
 @prefix solid: <http://www.w3.org/ns/solid/terms#>.
 @prefix pro: <./>.
-@prefix n0: <http://xmlns.com/foaf/0.1/>.
 @prefix schem: <http://schema.org/>.
 @prefix n: <http://www.w3.org/2006/vcard/ns#>.
 @prefix n1: <http://www.w3.org/ns/auth/acl#>.
@@ -13,11 +12,12 @@
 @prefix sp: <http://www.w3.org/ns/pim/space#>.
 @prefix luk: </>.
 
-pro:card a n0:PersonalProfileDocument; n0:maker :me; n0:primaryTopic :me.
+pro:card a foaf:PersonalProfileDocument; foaf:maker :me; foaf:primaryTopic :me.
 
 :me
-    a schem:Person, n0:Person;
+    a schem:Person, foaf:Person;
     n:fn "Luka Tav\u010der";
+    foaf:name "Luka Tav\u010der";
     foaf:img <https://media.licdn.com/dms/image/C5603AQGgHnTnBFchYw/profile-displayphoto-shrink_200_200/0?e=1571270400&v=beta&t=O1mIcRE5vagMci8QuYrygari6YvbPHsWI1-e24IECGs>;
     n1:trustedApp
             [
@@ -36,5 +36,4 @@ pro:card a n0:PersonalProfileDocument; n0:maker :me; n0:primaryTopic :me.
     sp:storage luk:;
     solid:account luk:;
     solid:privateTypeIndex </settings/privateTypeIndex.ttl>;
-    solid:publicTypeIndex </settings/publicTypeIndex.ttl>;
-    n0:name "Luka Tavc".
+    solid:publicTypeIndex </settings/publicTypeIndex.ttl>.

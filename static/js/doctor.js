@@ -29,31 +29,8 @@ solid.auth.trackSession(async function(session) {
     }
 });
 
-$('#view').click(async function loadProfile() {
-    // Set up a local data store and associated data fetcher
-    const store = $rdf.graph();
-    const fetcher = new $rdf.Fetcher(store);
-
-    // Load the person's data into the store
-    const person = $('#profile').val();
-    await fetcher.load(person);
-
-    // Display their details
-    const fullName = store.any($rdf.sym(person), FOAF('name'));
-    $('#fullName').text(fullName && fullName.value);
-
-    // Display their friends
-    const friends = store.each($rdf.sym(person), FOAF('knows'));
-    $('#friends').empty();
-    friends.forEach(async (friend) => {
-        await fetcher.load(friend);
-        const fullName = store.any(friend, FOAF('name'));
-        $('#friends').append(
-            $('<li>').append(
-                $('<a>').text(fullName && fullName.value || friend.value)
-                    .click(() => $('#profile').val(friend.value))
-                    .click(loadProfile)));
-    });
+$('#view-profile').click(function() {
+    loadPatient($('#profile-search').val());
 });
 
 Record = (function () {
@@ -135,6 +112,10 @@ Record = (function () {
         record.body = $('#edit-body').val();
         record.patient = $('#select-patient').val();
 
+        if (!record.title || !record.body || !record.patient) {
+            alert("Obrazec je nepopoln.");
+            return false;
+        }
 
         let patientStorageUri = null;
 
@@ -153,7 +134,7 @@ Record = (function () {
 
             let store = $rdf.graph();
             // let newRecord = $rdf.sym(newRecordUri);  // Node identified by a URI
-            let newRecord = $rdf.sym(SIOC('post'));  // Node identified by a URI
+            let newRecord = $rdf.sym(SIOC('Post'));  // Node identified by a URI
             store.add(newRecord, DCT('title'), $rdf.lit(record.title));  // A name given to the resource.
             store.add(newRecord, SIOC('content'), $rdf.lit(record.body));  // The content of the Item in plain text format.
             store.add(newRecord, DCT('created'),  $rdf.lit(moment().format(), '', XSD('dateTime')));
@@ -166,13 +147,6 @@ Record = (function () {
             }).catch(function (err) {
                 console.log(err);
             });
-            // if (url && url.slice(0, 4) != 'http') {
-            //     if (url.indexOf('/') === 0) {
-            //         url = url.slice(1, url.length);
-            //     }
-            //     url = defaultContainer + url.slice(url.lastIndexOf('/') + 1, url.length);
-            // }
-            // // window.location.search = "?view=" + encodeURIComponent(url);
         }).catch(function (err) {
             console.log(err);
         });
@@ -219,19 +193,6 @@ Record = (function () {
         update: update
     };
 }(this));
-
-$('#test-view').click(function() {
-    let url = 'https://lukatavcer.example.com:8443/health/records/record.ttl';
-    solidClient.web.get(url)
-        .then(function(response) {
-            const store = response.parsedGraph();
-            // Print all statements matching resources of type foaf:Post
-            console.log(store.statementsMatching(undefined, RDF('type'), SIOC('Post')))
-        })
-        .catch(function(err) {
-            console.log(err) // error object
-        })
-});
 
 async function loadPatients() {
     const $patientsLoader = $('#patients-loader');
@@ -284,7 +245,9 @@ let CurrentPatient = {
     webId: null,
     storage: null,
     name: null,
-    img: null,
+    image: null,
+    gender: null,
+    birthDate: null,
 };
 
 async function loadPatient(patientWebId) {
@@ -293,13 +256,37 @@ async function loadPatient(patientWebId) {
         // Get patient's storage location
         await solidClient.getProfile(patientWebId)
             .then(function (profile) {
+                let patient = $rdf.sym(patientWebId);
+
                 CurrentPatient.webId = patientWebId;
                 CurrentPatient.name = profile.name;
+                CurrentPatient.image = profile.picture || '/static/img/doc_default.png';
                 CurrentPatient.storage = profile.storage[0];
+
+                let gender = profile.parsedGraph.any(patient, FOAF('gender'));
+                let birthDate = profile.parsedGraph.any(patient, DBO('birthDate'));
+
+                if (gender) {
+                    CurrentPatient.gender = gender.value;
+                    $('#profile-gender').text(CurrentPatient.gender);
+                }
+
+
+                if (birthDate) {
+                    CurrentPatient.birthDate = moment(birthDate.value).format('D. M. YYYY');
+                    $('#profile-birth-date').text(CurrentPatient.birthDate);
+                }
+
+                $('#profile-name').text(CurrentPatient.name);
+                $('#profile-img').prop('src', CurrentPatient.image);
             });
 
         // Load & show patient's records
-        await loadRecords();
+        loadRecords();
+
+        // Set patient for a new record
+        $('#select-patient').val(patientWebId);
+        $('#profile-search').val(patientWebId);
     }
 }
 
@@ -347,12 +334,14 @@ async function loadRecords() {
                     } else {
                         // Fetch doctor's data
                         await fetcher.load(doctorWebId);
-                        doctor = store.any($rdf.sym(doctorWebId), VCARD('fn')).value;
+                        let doctorName = store.any($rdf.sym(doctorWebId), FOAF('name')).value;
                         let image = store.any($rdf.sym(doctorWebId), FOAF('img'));
                         if (image) {
                             doctorImage = image.value;
                         }
-
+                        if (doctorName) {
+                            doctor = doctorName;
+                        }
                         // Cache doctor to doctors dictionary
                         doctors[doctorWebId] = {
                             name: doctor,
@@ -371,7 +360,7 @@ async function loadRecords() {
                             <div class="media-body">
                                 <h4 class="media-heading" style="margin-bottom: 10px;">
                                     <span class="font-bold">${title}</span> - ${doctor}
-                                    <span class="date">(${moment(created).format('d. M. YYYY, h:mm')})</span>
+                                    <span class="date">(${moment(created).format('D. M. YYYY, h:mm')})</span>
                                 </h4>
                                 ${content}
                             </div>
@@ -387,3 +376,9 @@ async function loadRecords() {
         $recordsLoader.hide();
     }
 }
+
+$(document).ready(function() {
+    $('#publish-form, #profile-search-form').on('submit', function(e) {
+        e.preventDefault();
+    });
+});

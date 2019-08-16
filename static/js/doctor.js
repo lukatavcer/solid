@@ -165,9 +165,7 @@ async function loadPatients() {
             let nameOrUri = (fullName && fullName.value || patient.value);
 
             $patients.append(
-                $(`<li class="list-group-item" title="${patient.value}">
-<button type="button" class="badge badge-success">Nov izvid</button>
-<button type="button" class="badge badge-def" onClick="loadPatient('${patient.value}')">Profil</button>${nameOrUri}</li>`)
+                $(`<button type="button" class="list-group-item" title="${patient.value}" onClick="loadPatient('${patient.value}')">${nameOrUri}</button>`)
             );
 
             $selectPatients.append(
@@ -242,11 +240,11 @@ async function loadPatient(patientWebId) {
             }).catch(function (err) {
                 $('#profile-search-error').show();
                 $('#profile-data').hide();
-                $('#view-profile').blur();
             });
     } else {
         $('#profile-data').hide();
     }
+    $('.list-group-item').blur();
 }
 
 async function loadRecords() {

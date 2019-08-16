@@ -182,7 +182,7 @@ p.lead {
   width: 100%;
 }
 
-#profile-search-error {
+.alert.alert-danger {
   padding: 7px 15px;
 }
 

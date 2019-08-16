@@ -44,6 +44,7 @@ Record = (function () {
     }
 
     async function publish() {
+        $('#publish-error').hide();
         const session = await solid.auth.currentSession();
 
         if (!session) {
@@ -87,11 +88,16 @@ Record = (function () {
 
             solidClient.web.put(newRecordUri, data).then(function (meta) {
                 console.log("Created resource url: " + meta.url);
+                // Load & show patient's records
+                loadRecords();
+
+                clearForm();
             }).catch(function (err) {
                 console.log(err);
             });
         }).catch(function (err) {
             console.log(err);
+            $('#publish-error').show();
         });
     }
 
@@ -117,10 +123,16 @@ Record = (function () {
         solidClient.web.put(uri, data).then(function (meta) {
             // view
             loadRecords();
+
             $('#edit-record-modal').modal('hide');
         }).catch(function (err) {
             console.log(err);
         });
+    }
+
+    function clearForm() {
+        $('#publish-title').val('');
+        $('#publish-content').val('');
     }
 
     init();

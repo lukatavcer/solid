@@ -1,0 +1,11 @@
+@prefix n: <http://rdfs.org/sioc/ns#>.
+@prefix terms: <http://purl.org/dc/terms/>.
+@prefix XML: <http://www.w3.org/2001/XMLSchema#>.
+
+n:Post
+    terms:created "2019-08-16T14:22:15+02:00"^^XML:dateTime;
+    terms:creator "https://lukatavcer.example.com:8443/profile/card#me";
+    terms:rightsHolder "https://patient3.example.com:8443/profile/card#me";
+    terms:title "Izvid 1";
+    n:content
+    "To je izvid 1, ki sem ga napisal Petru Klepcu, ker je bil bolan.".

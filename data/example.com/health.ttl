@@ -1,0 +1,85 @@
+@prefix : <https://example.com:8443/health#>.
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix foaf: <http://xmlns.com/foaf/0.1/>.
+
+@prefix n: <http://rdfs.org/sioc/ns#>.
+@prefix dct: <http://purl.org/dc/terms/>.
+@prefix XML: <http://www.w3.org/2001/XMLSchema#>.
+
+# Contents of health ontology
+:Record
+    rdf:type owl:Class;
+    rdfs:label "Medical record";
+    #rdf:Property :title;
+    #rdf:Property :content;
+    #rdf:Property :created;
+    #rdf:Property :doctor;
+    #rdf:Property :patient;
+    rdfs:comment "Medical record/file used in health care systems.".
+
+:title
+    rdf:type owl:DatatypeProperty .
+
+:created
+    rdf:type owl:DatatypeProperty .
+
+:content
+    rdf:type owl:ObjectProperty;
+    rdfs:range rdfs:Literal .
+
+:creator
+    rdf:type owl:ObjectProperty;
+    rdfs:domain foaf:Person .
+
+:doctor
+    rdf:type owl:ObjectProperty;
+    rdfs:domain foaf:Person .
+
+:patient
+    rdf:type owl:ObjectProperty;
+    rdfs:domain foaf:Person .
+
+
+:newRecord a :Record;
+    :title "Nov izvid";
+    :content "To je vsebina novega izvida.";
+    :doctor "https://doctor.example.com:8443/profile/card#me";
+    :patient "https://patient.example.com:8443/profile/card#me";
+    :created "2019-08-16T13:11:10+02:00"^^XML:dateTime.
+
+:newRecord2 a :Record;
+    :title "Se en izvid";
+    :content "Glej ga vraga krneki sm napisu";
+    :doctor "https://doctor2.example.com:8443/profile/card#me";
+    :patient "https://patient2.example.com:8443/profile/card#me";
+    :created "2019-09-02T04:55:10+02:00"^^XML:dateTime.
+
+
+n:Post
+    dct:created "2019-08-16T13:11:10+02:00"^^XML:dateTime;
+    dct:creator "https://doctor2.example.com:8443/profile/card#me";
+    dct:title "Izvid 3";
+    dct:rightsHolder "https://patient4.example.com:8443/profile/card#me";
+    n:content "Stanje se izboljšuje.".
+
+
+# SPARQL TO QUERY RECORD
+https://jeff-zucker.github.io/sparql-fiddle/
+
+PREFIX health: <https://example.com:8443/health#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+SELECT * WHERE { ?subject rdf:type health:Record . ?subject ?predicate ?object .}
+
+
+1) QUERY vse recorde:
+PREFIX health: <https://example.com:8443/health#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+SELECT DISTINCT * WHERE { ?subject rdf:type health:Record .}
+
+2) query za vsak record:
+PREFIX health: <https://example.com:8443/health#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+SELECT DISTINCT * WHERE { <https://example.com:8443/health#newRecord> ?predicate ?object .}

@@ -99,6 +99,8 @@ Record = (function () {
             console.log(err);
             $('#publish-error').show();
         });
+
+        $('#add-record').blur();
     }
 
     function update() {

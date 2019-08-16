@@ -65,6 +65,8 @@ n:Post
     dct:rightsHolder "https://patient4.example.com:8443/profile/card#me";
     n:content "Stanje se izboljšuje.".
 
+# VIZUALIZACIJA
+http://www.easyrdf.org/converter
 
 # SPARQL TO QUERY RECORD
 https://jeff-zucker.github.io/sparql-fiddle/

@@ -33,70 +33,14 @@ $('#view-profile').click(function() {
 });
 
 Record = (function () {
-    // Default publish location
-    let defaultContainer = BIN_PATH;
-    let WebId = 'https://lukatavcer.example.com:8443/';
-    let healthContainer = WebId + 'health/';
-    let recordsContainer = healthContainer + 'records/';
-
-    // Record structure
-    let record = {
-        url: '',
-        title: '',
-        body: '',
-        patient: '',
-    };
 
     async function init() {
         const session = await solid.auth.currentSession();
 
         if (session) {
-            console.log(defaultContainer);
-
-            if (queryVals['view'] && queryVals['view'].length > 0) {
-                load(queryVals['view']);
-            } else if (queryVals['edit'] && queryVals['edit'].length > 0) {
-                load(queryVals['edit'], true);
-            } else {
-                $('#add-record').attr('onclick', 'Record.publish()');
-                $('#edit').removeClass('hidden');
-            }
+            $('#add-record').attr('onclick', 'Record.publish()');
+            $('#edit-record').attr('onclick', 'Record.update()');
         }
-    }
-
-    function load(url, showEditor) {
-        solidClient.web.get(url).then(function (response) {
-            let store = response.parsedGraph();
-
-            // Set url
-            record.url = response.url;
-            let subject = $rdf.sym(response.url);
-
-            // Add title
-            let title = store.any(subject, DCT('title'));
-            if (title) {
-                record.title = title.value;
-            }
-
-            // Add body
-            let body = store.any(subject, SIOC('content'));
-            if (body) {
-                record.body = body.value;
-            }
-
-            if (showEditor) {
-                $('#edit-title').val(record.title);
-                $('#edit-body').html(record.body);
-                $('#submit').attr('onclick', 'Record.update()');
-                $('#edit').removeClass('hidden');
-            } else {
-                $('#view-title').html(record.title);
-                $('#view-body').html(record.body);
-                $('#view-publish').removeClass('hidden');
-            }
-        }).catch(function (err) {
-            console.log(err);
-        });
     }
 
     async function publish() {
@@ -107,11 +51,11 @@ Record = (function () {
             return false;
         }
 
-        record.title = $('#edit-title').val();
-        record.body = $('#edit-body').val();
-        record.patient = $('#select-patient').val();
+        let title = $('#publish-title').val();
+        let content = $('#publish-content').val();
+        let patient = $('#select-patient').val();
 
-        if (!record.title || !record.body || !record.patient) {
+        if (!title || !content || !patient) {
             alert("Obrazec je nepopoln.");
             return false;
         }
@@ -119,7 +63,7 @@ Record = (function () {
         let patientStorageUri = null;
 
         // Get patient's profile to get his storage location
-        await solidClient.getProfile(record.patient)
+        await solidClient.getProfile(patient)
             .then(function (profile) {
                 patientStorageUri = profile.storage[0];
             });
@@ -132,17 +76,17 @@ Record = (function () {
             let newRecordUri = patientStorageUri.slice(0, -1) + meta.url;  // Combine storage root with relative new record URI
 
             let store = $rdf.graph();
-            // let newRecord = $rdf.sym(newRecordUri);  // Node identified by a URI
             let newRecord = $rdf.sym(SIOC('Post'));  // Node identified by a URI
-            store.add(newRecord, DCT('title'), $rdf.lit(record.title));  // A name given to the resource.
-            store.add(newRecord, SIOC('content'), $rdf.lit(record.body));  // The content of the Item in plain text format.
+            store.add(newRecord, DCT('title'), $rdf.lit(title));  // A name given to the resource.
+            store.add(newRecord, SIOC('content'), $rdf.lit(content));  // The content of the Item in plain text format.
             store.add(newRecord, DCT('created'),  $rdf.lit(moment().format(), '', XSD('dateTime')));
             store.add(newRecord, DCT('creator'),  $rdf.lit(doctorWebId));
+            store.add(newRecord, DCT('rightsHolder'),  $rdf.lit(patient));
 
             let data = new $rdf.Serializer(store).toN3(store);
 
             solidClient.web.put(newRecordUri, data).then(function (meta) {
-                let url = meta.url;
+                console.log("Created resource url: " + meta.url);
             }).catch(function (err) {
                 console.log(err);
             });
@@ -152,37 +96,32 @@ Record = (function () {
     }
 
     function update() {
-        record.title = $('#edit-title').val();
-        record.body = $('#edit-body').val();
+        let uri = $('#selected-record').val();
+        let record = recordsData[uri];
 
-        var graph = $rdf.graph();
-        var thisResource = $rdf.sym('');
-        graph.add(thisResource, DCT('title'), record.title);
-        graph.add(thisResource, SIOC('content'), record.body);
-        var data = new $rdf.Serializer(graph).toN3(graph);
+        let title = $('#edit-title').val();
+        let content = $('#edit-content').val();
 
-        solidClient.web.put(record.url, data).then(function (meta) {
+        let store = $rdf.graph();
+        let editRecord = $rdf.sym(SIOC('Post'));  // Node identified by a URI
+
+        store.add(editRecord, DCT('title'), $rdf.lit(title));
+        store.add(editRecord, SIOC('content'), $rdf.lit(content));
+        store.add(editRecord, DCT('created'),  $rdf.lit(record.created, '', XSD('dateTime')));
+        store.add(editRecord, DCT('modified'),  $rdf.lit(moment().format(), '', XSD('dateTime')));
+        store.add(editRecord, DCT('creator'),  $rdf.lit(record.doctorWebId));
+        store.add(editRecord, DCT('rightsHolder'),  $rdf.lit(record.patient));
+
+        let data = new $rdf.Serializer(store).toN3(store);
+
+        solidClient.web.put(uri, data).then(function (meta) {
             // view
-            window.location.search = "?view=" + encodeURIComponent(meta.url);
+            loadRecords();
+            $('#edit-record-modal').modal('hide');
         }).catch(function (err) {
-            // do something with the error
             console.log(err);
         });
     }
-
-    // Utility function to parse URL query string values
-    var queryVals = (function (a) {
-        if (a == "") return {};
-        var b = {};
-        for (var i = 0; i < a.length; ++i) {
-            var p = a[i].split('=', 2);
-            if (p.length === 1)
-                b[p[0]] = "";
-            else
-                b[p[0]] = decodeURIComponent(p[1].replace(/\+/g, " "));
-        }
-        return b;
-    })(window.location.search.substr(1).split('&'));
 
     init();
 
@@ -240,6 +179,9 @@ async function loadPatients() {
     }
 }
 
+// Patient profiles
+let patients = {};
+
 let CurrentPatient = {
     webId: null,
     storage: null,
@@ -290,6 +232,10 @@ async function loadPatient(patientWebId) {
                 // Load & show patient's records
                 loadRecords();
 
+                if (!patients[patientWebId]) {
+                    patients[patientWebId] = CurrentPatient;
+                }
+
                 // Set patient for a new record
                 $('#select-patient').val(patientWebId);
                 $('#profile-search').val(patientWebId);
@@ -314,7 +260,23 @@ async function loadRecords() {
 }
 
 $(document).ready(function() {
-    $('#publish-form, #profile-search-form').on('submit', function(e) {
+    $('#publish-form, #edit-form, #profile-search-form').on('submit', function(e) {
         e.preventDefault();
     });
+});
+
+$('#records').on('click', '.media', function() {
+    let $recordWrapper = $('#record-wrapper');
+    $recordWrapper.removeClass('publish-record');
+    $recordWrapper.addClass('edit-record');
+
+    let uri = this.id;
+    let record = recordsData[uri];
+    $('#selected-record').val(uri);
+    $('#selected-patient').val(patients[record.patient].name);
+    $('#edit-title').val(record.title);
+    $('#edit-content').val(record.content);
+
+    $('#edit-record-modal').modal('show');
+
 });

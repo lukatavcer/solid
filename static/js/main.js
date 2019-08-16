@@ -145,6 +145,9 @@ async function test() {
         });
 }
 
+// Records
+const recordsData = {};
+
 async function _loadRecords(url) {
     const $recordsLoader = $('#records-loader');
     const $records = $('#records');
@@ -173,40 +176,48 @@ async function _loadRecords(url) {
                         let content = store.any(SIOC('Post'), SIOC('content'), undefined, record).value;
                         let created = store.any(SIOC('Post'), DCT('created'), undefined, record).value;
                         let doctorWebId = store.any(SIOC('Post'), DCT('creator'), undefined, record).value;
+                        let patient = store.any(SIOC('Post'), DCT('rightsHolder'), undefined, record).value;
 
                         // Get doctor's data (name, image...)
-                        let doctor = doctorWebId;
+                        let doctorName = doctorWebId;
                         let doctorImage = "/static/img/doc_default.png";
 
                         if (doctors[doctorWebId]) {
-                            doctor = doctors[doctorWebId].name || doctor;
+                            doctorName = doctors[doctorWebId].name || doctorWebId;
                             doctorImage = doctors[doctorWebId].image || doctorImage;
                         } else {
                             // Fetch doctor's data
                             await fetcher.load(doctorWebId);
-                            let doctorName = store.any($rdf.sym(doctorWebId), FOAF('name')).value;
+                            let name = store.any($rdf.sym(doctorWebId), FOAF('name'));
                             let image = store.any($rdf.sym(doctorWebId), FOAF('img'));
                             if (image) {
                                 doctorImage = image.value;
                             }
-                            if (doctorName) {
-                                doctor = doctorName;
+                            if (name) {
+                                doctorName = name.value;
                             }
                             // Cache doctor to doctors dictionary
                             doctors[doctorWebId] = {
-                                name: doctor,
+                                name: doctorName,
                                 image: doctorImage
                             }
                         }
-                        records.push(
-                            {
-                                title: title,
-                                doctor: doctor,
-                                doctorImage: doctorImage,
-                                content: content,
-                                created: created,
-                            }
-                        );
+
+                        let recordData = {
+                            title: title,
+                            content: content,
+                            created: created,
+                            patient: patient,
+                            doctorWebId: doctorWebId,
+                            doctor: doctorName,
+                            doctorImage: doctorImage,
+                            uri: resource
+                        };
+
+                        // Global
+                        recordsData[resource] = recordData;
+                        // Local just to sort
+                        records.push(recordData);
                     }
                 }
 
@@ -215,9 +226,9 @@ async function _loadRecords(url) {
 
                 // Sort records by datetime created
                 records.sort(function compare(a, b) {
-                    if (a.created > b.created)
-                        return a;
-                    return b;
+                    if (new Date(a.created) > new Date(b.created))
+                        return 1;
+                    return -1;
                 });
 
                 $recordsLoader.hide();
@@ -225,7 +236,7 @@ async function _loadRecords(url) {
                 $.each(records, function(index, r) {
                     $records.append(
                         $(`
-                        <div class="media">
+                        <div class="media" id="${r.uri}" data-patient="${r.patient}">
                             <div class="media-left">
                                 <a href="#">
                                     <img class="media-object" data-src="favicon.ico" alt="64x64" src="${r.doctorImage}" data-holder-rendered="true" style="width: 64px; height: 64px;">
@@ -233,10 +244,11 @@ async function _loadRecords(url) {
                             </div>
                             <div class="media-body">
                                 <h4 class="media-heading" style="margin-bottom: 10px;">
-                                    <span class="font-bold">${r.title}</span> - ${r.doctor}
-                                    <span class="date">(${moment(r.created).format('D. M. YYYY, h:mm')})</span>
+                                    <span class="font-bold record-title">${r.title}</span> - ${r.doctor}
+                                    <span class="date">(${moment(r.created).format('D. M. YYYY, H:mm')})</span>
+                                    <span class="record-date" hidden>${r.created}</span>
                                 </h4>
-                                ${r.content}
+                                <span class="record-content">${r.content}</span>
                             </div>
                         </div>
                         `)

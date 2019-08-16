@@ -5,5 +5,6 @@
 n:Post
     terms:created "2019-08-13T22:58:10+02:00"^^XML:dateTime;
     terms:creator "https://lukatavcer.example.com:8443/profile/card#me";
+    terms:rightsHolder "https://lukatavcer.example.com:8443/profile/card#me";
     terms:title "Izvid 1";
     n:content "123123123123131231231231231323".

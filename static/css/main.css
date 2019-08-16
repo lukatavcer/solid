@@ -185,3 +185,11 @@ p.lead {
 #profile-search-error {
   padding: 7px 15px;
 }
+
+.float-left {
+  float: left;
+}
+
+.float-right {
+  float: right;
+}

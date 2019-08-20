@@ -197,7 +197,11 @@ async function loadRights() {
 
     const store = $rdf.graph();
     const fetcher = new $rdf.Fetcher(store);
-    await fetcher.load(healthProfileUrl);
+    await fetcher.load(healthProfileUrl).catch(async function(e) {
+        await solidClient.web.put(healthProfileUrl).then(function (meta) {
+            return meta.url;
+        });
+    });
 
     let personalDoctor = null;
     let specialists = null;

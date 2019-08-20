@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Set content in the next line to false if you do not want your homepage to be automatically updated whenever a new version becomes available. -->
+  <meta name="solid-allow-automatic-updates" content="true">
+  <title>Blaž Specialc &ndash; Solid Home</title>
+  <link rel="stylesheet" href="/common/css/bootstrap.min.css">
+  <link rel="stylesheet" href="/common/css/solid.css">
+  <link rel="stylesheet" href="/static/css/main.css">
+</head>
+<body>
+<div class="container">
+  <div class="page-header">
+    <div class="pull-right">
+      <button id="login" type="button" class="hidden btn btn-default btn-success">Prijava</button>
+      <button id="logout" type="button" class="hidden btn btn-danger">Odjava</button>
+    </div>
+
+    <h1>Blaž Specialc &ndash; Solid domača stran</h1>
+  </div>
+
+  <p class="lead">
+    <span>
+      To je domača stran uporabnika Blaž Specialc, čigar WebID je
+    </span>
+    <a href="https://specialist2.example.com:8443/profile/card#me"><mark>https://specialist2.example.com:8443/profile/card#me</mark></a>.
+  </p>
+
+  <section>
+    <h1>Podatki</h1>
+    <div class="list-group">
+      <a href="/profile/card" target="_blank" class="list-group-item">
+        <span class="lead">Profil</span>
+        <span class="badge">javno</span>
+      </a>
+      <a href="/inbox/" target="_blank" class="list-group-item">
+        <span class="lead">Sporočila</span>
+        <span class="badge">zasebno</span>
+      </a>
+      <a href="/public/" target="_blank" class="list-group-item">
+        <span class="lead">Javna Mapa</span>
+        <span class="badge">javno</span>
+      </a>
+      <a href="/private/" target="_blank" class="list-group-item">
+        <span class="lead">Zasebna Mapa</span>
+        <span class="badge">zasebno</span>
+      </a>
+    </div>
+  </section>
+
+  <section>
+    <h1>Apps</h1>
+    <div class="list-group">
+      <a href="https://github.com/solid/userguide" target="_blank" class="list-group-item">
+        <span class="lead">Navodila za uporabo platforme Solid in podatkovnega brskalnika</span>
+      </a>
+    </div>
+  </section>
+
+  <section class="hidden" id="account-settings">
+    <h1>Nastavitve računa</h1>
+    <div class="list-group">
+      <a href="https://example.com:8443/account/delete/" class="list-group-item">
+        <span class="lead">Izbriši račun</span>
+      </a>
+    </div>
+  </section>
+</div>
+
+<script src="/common/js/solid-auth-client.bundle.js"></script>
+<script src="/common/js/auth-buttons.js"></script>
+</body>
+</html>

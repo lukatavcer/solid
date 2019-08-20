@@ -8,11 +8,12 @@
     acl:mode
         acl:Read, acl:Write, acl:Control.
 
-# Group authorization, giving Read/Write access to members of the Doctor group
-<#authorization>
+# Group authorization, giving Read/Write access to members of the Emergency group
+<#emergency>
     a               acl:Authorization;
-    acl:accessTo    <https://lukatavcer.example.com:8443/health/records/0a9c0220-bdd9-11e9-bcac-e52453a0d5b1.ttl>;
+    acl:accessTo    <./>;
     acl:mode        acl:Read,
                     acl:Write;
-    acl:agentGroup  <https://example.com:8443/groups.ttl#Doctor>.
+    acl:default <./>;
+    acl:agentGroup  <https://example.com:8443/groups.ttl#Emergency>.
 

@@ -16,6 +16,25 @@
     vcard:hasMember  <https://specialist.example.com:8443/profile/card#me>;
     vcard:hasMember  <https://specialist2.example.com:8443/profile/card#me>.
 
+<#Specialist>
+    a                vcard:Group;
+    vcard:hasUID     <urn:uuid:8831CBAD-1111-2222-8563-F0F4787E5391:ABGroup>;
+    dc:created       "2019-07-20T12:18:19+0000"^^xsd:dateTime;
+    dc:modified      "2019-07-20T12:45:15+0000"^^xsd:dateTime;
+
+    # Specialist group members:
+    vcard:hasMember  <https://specialist.example.com:8443/profile/card#me>;
+    vcard:hasMember  <https://specialist2.example.com:8443/profile/card#me>.
+
+<#Emergency>
+    a                vcard:Group;
+    vcard:hasUID     <urn:uuid:8831CBAD-1111-2222-8563-F0F4787E5391:ABGroup>;
+    dc:created       "2019-07-20T12:18:19+0000"^^xsd:dateTime;
+    dc:modified      "2019-07-20T12:45:15+0000"^^xsd:dateTime;
+
+    # Specialist group members:
+    vcard:hasMember  <https://lukatavcer.example.com:8443/profile/card#me>.
+
 <#Patient>
     a                vcard:Group;
     vcard:hasUID     <urn:uuid:8831CBAD-3333-4444-8563-F0F4787E5398:ABGroup>;

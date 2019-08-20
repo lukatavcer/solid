@@ -139,13 +139,15 @@ $('#edit-record').click(async function() {
     acl:mode
         acl:Read, acl:Write, acl:Control.
 
-# Group authorization, giving Read/Write access to members of the Doctor group
-<#authorization>
+
+# Group authorization, giving Read/Write access to members of the Emergency group
+<#emergency>
     a               acl:Authorization;
-    acl:accessTo    <${recordUri}>;
+    acl:accessTo    <./>;
     acl:mode        acl:Read,
                     acl:Write;
-    acl:agentGroup  <https://example.com:8443/groups.ttl#Doctor>.
+    acl:default <./>;
+    acl:agentGroup  <https://example.com:8443/groups.ttl#Emergency>.
 
 `;
 
@@ -277,14 +279,15 @@ async function saveRights() {
     acl:mode
         acl:Read, acl:Write, acl:Control.
 
-# Group authorization, giving Read/Write access to members of the Doctor group
-<#authorization>
+
+# Group authorization, giving Read/Write access to members of the Emergency group
+<#emergency>
     a               acl:Authorization;
     acl:accessTo    <./>;
     acl:mode        acl:Read,
                     acl:Write;
     acl:default <./>;
-    acl:agentGroup  <https://example.com:8443/groups.ttl#Doctor>.
+    acl:agentGroup  <https://example.com:8443/groups.ttl#Emergency>.
 
 `;
 

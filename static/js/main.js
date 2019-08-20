@@ -93,14 +93,15 @@ async function createACL (userStorageUri, userWebId) {
     acl:mode
         acl:Read, acl:Write, acl:Control.
 
-# Group authorization, giving Read/Write access to members of the Doctor group
-<#authorization2>
+# Group authorization, giving Read/Write access to members of the Emergency group
+<#emergency>
     a               acl:Authorization;
     acl:accessTo    <./>;
     acl:mode        acl:Read,
                     acl:Write;
     acl:default <./>;
-    acl:agentGroup  <https://example.com:8443/groups.ttl#Doctor>.`;
+    acl:agentGroup  <https://example.com:8443/groups.ttl#Emergency>.
+`;
 
     await solidClient.web.put(userStorageUri+'health/.acl', content).then(function (meta) {
         return meta.url;

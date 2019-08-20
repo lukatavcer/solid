@@ -139,7 +139,6 @@ $('#edit-record').click(async function() {
     acl:mode
         acl:Read, acl:Write, acl:Control.
 
-
 # Group authorization, giving Read/Write access to members of the Emergency group
 <#emergency>
     a               acl:Authorization;
@@ -279,7 +278,6 @@ async function saveRights() {
     acl:mode
         acl:Read, acl:Write, acl:Control.
 
-
 # Group authorization, giving Read/Write access to members of the Emergency group
 <#emergency>
     a               acl:Authorization;
@@ -376,10 +374,14 @@ $('#change-doctor-save').click(function() {
         `@prefix : <#>.
 
 :me
-    _:personalDoctor <${newDoctorUri}>;
-    _:specialist ${specialists}.
+    _:personalDoctor <${newDoctorUri}>`;
 
-`;
+    if (specialists) {
+        content += `\n\t_:specialist ${specialists}`
+    } else {
+        content += '.\n';
+    }
+
     solidClient.web.put(url, content)
         .then(async function (response){
             $('#personal-doctor').text(newDoctorUri);

@@ -17,3 +17,12 @@
                     acl:Write;
     acl:default <./>;
     acl:agentGroup  <https://example.com:8443/groups.ttl#Emergency>.
+
+<#personalDoctor>
+    a acl:Authorization;
+    acl:agent <https://doctor.example.com:8443/profile/card#me>;
+    acl:accessTo <./>;
+    acl:default <./>;
+    acl:mode
+        acl:Read, acl:Write, acl:Append.
+        

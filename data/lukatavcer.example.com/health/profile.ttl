@@ -1,0 +1,4 @@
+@prefix : <#>.
+
+:me
+    _:personalDoctor <https://doctor.example.com:8443/profile/card#me>.

@@ -5,7 +5,7 @@
 n:Post
     terms:created "2019-08-14T17:41:41+02:00"^^XML:dateTime;
     terms:creator "https://lukatavcer.example.com:8443/profile/card#me";
-    terms:modified "2019-08-16T14:01:57+02:00"^^XML:dateTime;
+    terms:modified "2019-08-19T21:11:14+02:00"^^XML:dateTime;
     terms:rightsHolder "https://patient4.example.com:8443/profile/card#me";
     terms:title "Nov izvid";
-    n:content "Test sporocilo izvida tran, samo zdravniki  2".
+    n:content "Test sporocilo izvida tran, samo zdravniki  5".

@@ -38,7 +38,7 @@
 
     <section>
         <div class="row" style="margin-bottom: 15px;">
-            <div class="col-xs-8">
+            <div class="col-xs-12">
                 <h2 class="d-inline">Moji izvidi</h2>
                 <button type="button" class="btn btn-primary ml-1" id="btn-load-records" onClick="loadRecords()">
                     Osveži
@@ -46,7 +46,7 @@
             </div>
         </div>
         <div class="row">
-            <div class="col-xs-8">
+            <div class="col-xs-12">
                 <div class="loader" id="records-loader" style="margin-top: 50px;">
                     <span></span>
                     <span></span>
@@ -57,11 +57,51 @@
         </div>
     </section>
 </div>
+
+
+<!-- Modal -->
+<div class="modal fade" id="edit-record-modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">Uredi pravice dostopa za izvid (<strong id="edit-title"></strong>)</h4>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-xs-12">
+                        <input id="record-uri" hidden>
+                        <div class="form-group">
+                            <label>Avtor</label>
+                            <div id="edit-author"></div>
+                        </div>
+                        <label>Omogoči dostop novim uporabnikom</label>
+                        <div class="input-group">
+                            <input type="url" class="form-control" id="acl-new-user" placeholder="Vpiši WebId..." value="https://">
+                            <span class="input-group-btn">
+                                <button class="btn btn-default" type="button" id="acl-add">Dodaj</button>
+                            </span>
+                        </div>
+
+                        <label style="padding-top: 20px;">Pravice dostopa</label>
+                        <ul class="list-group pt-2" id="acl-users"></ul>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default float-left" data-dismiss="modal">Zapri</button>
+                <button type="button" id="edit-record" class="btn btn-primary">Shrani spremembe</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script src="/static/js/jquery.js"></script>
 <script src="/common/js/solid-auth-client.bundle.js"></script>
 <script src="/static/js/auth-buttons.js"></script>
 <script src="/static/js/rdflib.min.js"></script>
 <script src="/static/js/solid.min.js"></script>
+<script src="/static/js/bootstrap.min.js"></script>
 <script src="/static/js/moment.min.js"></script>
 <script src="/static/js/main.js"></script>
 <script src="/static/js/patient.js"></script>

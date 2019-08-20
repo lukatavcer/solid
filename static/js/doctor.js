@@ -1,7 +1,3 @@
-const ROOT_NAME = 'example.com';
-const PORT = '8443';
-const BIN_PATH = 'https://lukatavcer.example.com:8443/health/records/';
-
 // Update components to match the user's login status
 solid.auth.trackSession(async function(session) {
     let loggedIn = !!session;
@@ -278,10 +274,6 @@ $(document).ready(function() {
 });
 
 $('#records').on('click', '.media', function() {
-    let $recordWrapper = $('#record-wrapper');
-    $recordWrapper.removeClass('publish-record');
-    $recordWrapper.addClass('edit-record');
-
     let uri = this.id;
     let record = recordsData[uri];
     $('#selected-record').val(uri);
@@ -290,5 +282,4 @@ $('#records').on('click', '.media', function() {
     $('#edit-content').val(record.content);
 
     $('#edit-record-modal').modal('show');
-
 });

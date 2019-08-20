@@ -212,6 +212,14 @@ async function loadRights() {
 
     solidClient.getPermissions(healthUrl)
         .then(function (permissionSet) {
+            // Emergency rights
+            let $emergencyRights = $('#emergency-rights');
+            let auth = permissionSet.permissionFor("https://example.com:8443/groups.ttl#Emergency");
+            if (auth.allowsRead()) $emergencyRights.find('input[name="acl-read"]').prop('checked', 'checked');
+            if (auth.allowsWrite()) $emergencyRights.find('input[name="acl-write"]').prop('checked', 'checked');
+            if (auth.allowsAppend()) $emergencyRights.find('input[name="acl-append"]').prop('checked', 'checked');
+
+            // Personal doctor
             if (personalDoctor) {
                 $('#personal-doctor').text(personalDoctor.object.value);
                 $('#current-doctor-uri').val(personalDoctor.object.value);  // On change personal doctor modal
@@ -226,6 +234,7 @@ async function loadRights() {
             $rightsLoader.hide();
             $('#rights-wrapper').show();
 
+            // Specialists
             const $specialists = $('#specialist-rights');
             specialists.forEach(function (specialist) {
                 console.log("Specialist: " + specialist.object.value);
@@ -278,23 +287,37 @@ async function saveRights() {
     acl:mode
         acl:Read, acl:Write, acl:Control.
 
-# Group authorization, giving Read/Write access to members of the Emergency group
-<#emergency>
-    a               acl:Authorization;
-    acl:accessTo    <./>;
-    acl:mode        acl:Read,
-                    acl:Write;
-    acl:default <./>;
-    acl:agentGroup  <https://example.com:8443/groups.ttl#Emergency>.
 
 `;
+    // Set emergency rights
+    let $emergencyRights = $('#emergency-rights');
+    let read = $emergencyRights.find('input[name="acl-read"]').prop('checked');
+    let write = $emergencyRights.find('input[name="acl-write"]').prop('checked');
+    let append = $emergencyRights.find('input[name="acl-append"]').prop('checked');
+    if (read || write || append) {
+        let rights = '';
+        if (read) rights += 'r';
+        if (write) rights += 'w';
+        if (append) rights += 'a';
+
+        content +=
+            `<#emergency>
+    a acl:Authorization;
+    acl:accessTo <./>;
+    acl:default <./>;
+    acl:mode
+        ${ACL_RIGHTS[rights]};
+    acl:agentGroup  <https://example.com:8443/groups.ttl#Emergency>.
+        
+`;
+    }
 
     // Set personal doctor's rights
     let $personalDoctorRights = $('#personal-doctor-rights');
 
-    let read = $personalDoctorRights.find('input[name="acl-read"]').prop('checked');
-    let write = $personalDoctorRights.find('input[name="acl-write"]').prop('checked');
-    let append = $personalDoctorRights.find('input[name="acl-append"]').prop('checked');
+    read = $personalDoctorRights.find('input[name="acl-read"]').prop('checked');
+    write = $personalDoctorRights.find('input[name="acl-write"]').prop('checked');
+    append = $personalDoctorRights.find('input[name="acl-append"]').prop('checked');
     if (read || write || append) {
         let rights = '';
         if (read) rights += 'r';
@@ -313,6 +336,7 @@ async function saveRights() {
 `;
     }
 
+    // Set specialists rights
     let count = 1;
 
     for (let li of $('#specialist-rights li')) {

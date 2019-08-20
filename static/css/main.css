@@ -212,3 +212,18 @@ p.lead {
 .text-center {
   text-align: center !important;
 }
+
+.list-group-item-new {
+  padding: 5px;
+}
+
+.list-group-item-new input[type="text"] {
+  width: 80%;
+  display: inline-block;
+}
+
+.list-group-item-new .float-right {
+  top: 8px;
+  right: 10px;
+  position: relative;
+}

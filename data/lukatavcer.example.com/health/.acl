@@ -9,15 +9,15 @@
     acl:mode
         acl:Read, acl:Write, acl:Control.
 
-# Group authorization, giving Read/Write access to members of the Emergency group
-<#emergency>
-    a               acl:Authorization;
-    acl:accessTo    <./>;
-    acl:mode        acl:Read,
-                    acl:Write;
-    acl:default <./>;
-    acl:agentGroup  <https://example.com:8443/groups.ttl#Emergency>.
 
+<#emergency>
+    a acl:Authorization;
+    acl:accessTo <./>;
+    acl:default <./>;
+    acl:mode
+        acl:Read, acl:Write, acl:Append;
+    acl:agentGroup  <https://example.com:8443/groups.ttl#Emergency>.
+        
 <#personalDoctor>
     a acl:Authorization;
     acl:agent <https://doctor.example.com:8443/profile/card#me>;
@@ -26,3 +26,12 @@
     acl:mode
         acl:Read, acl:Write, acl:Append.
         
+<#specialist1>
+        a acl:Authorization;
+        acl:agent <https://specialist.example.com:8443/profile/card#me>;
+        acl:accessTo <./>;
+        acl:default <./>;
+        acl:mode
+            acl:Read.
+            
+    

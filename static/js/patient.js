@@ -338,36 +338,50 @@ async function saveRights() {
 
     // Set specialists rights
     let count = 1;
+    let newSpecialists = [];
 
-    for (let li of $('#specialist-rights li')) {
-        let $li = $(li);
-        let uri = $li.find('.acl-webId').text();
+    async function getSpecialists() {
+        for (let li of $('#specialist-rights li')) {
+            let $li = $(li);
+            let uri = $li.find('.acl-webId').text(); // Check if input value, if new was added
+            if (!uri)
+                uri = $li.find('.acl-webId').val();
+                if (uri) {
+                    newSpecialists.push(uri);
+                } else {
+                    continue;
+                }
 
-        let read = $li.find('input[name="acl-read"]').prop('checked');
-        let write = $li.find('input[name="acl-write"]').prop('checked');
-        let append = $li.find('input[name="acl-append"]').prop('checked');
-        if (!read && !write && !append)
-            continue;
+            let read = $li.find('input[name="acl-read"]').prop('checked');
+            let write = $li.find('input[name="acl-write"]').prop('checked');
+            let append = $li.find('input[name="acl-append"]').prop('checked');
+            if (!read && !write && !append)
+                continue;
 
-        let rights = '';
-        if (read) rights += 'r';
-        if (write) rights += 'w';
-        if (append) rights += 'a';
+            let rights = '';
+            if (read) rights += 'r';
+            if (write) rights += 'w';
+            if (append) rights += 'a';
 
-        content +=
-            `<#specialist${count}>
-    a acl:Authorization;
-    acl:agent <${uri}>;
-    acl:accessTo <./>;
-    acl:default <./>;
-    acl:mode
-        ${ACL_RIGHTS[rights]}.
-        
-`;
-
-        count++;
-
+            content +=
+                `<#specialist${count}>
+        a acl:Authorization;
+        acl:agent <${uri}>;
+        acl:accessTo <./>;
+        acl:default <./>;
+        acl:mode
+            ${ACL_RIGHTS[rights]}.
+            
+    `;
+            count++;
+        }
     }
+
+    await getSpecialists();
+
+    // Add new specialists
+    await addSpecialists(newSpecialists);
+
     await solidClient.web.put(healthAcl, content).then(function (meta) {
         $('#save-rights-success').show();
         return meta.url;
@@ -375,6 +389,36 @@ async function saveRights() {
         alert("Nekaj je šlo narobe. " + err);
         console.log(err);
     });
+}
+
+async function addSpecialists(specialists) {
+    let url = LoggedUser.storage + 'health/profile.ttl';
+    let specialistsString = '';
+
+    let content =
+        `@prefix : <#>.
+
+:me
+    _:personalDoctor <${$('#personal-doctor').text()}>`;
+
+    for (let i=0; i<specialists.length; i++) {
+        specialistsString += `<${specialists[i]}>`;
+
+        if (i < specialists.length-1)
+            specialistsString += ',\n\t\t\t\t ';
+    }
+
+    if (specialistsString) {
+        content += `;\n\t_:specialist ${specialistsString}.`
+    } else {
+        content += '.\n';
+    }
+
+    await solidClient.web.put(url, content)
+        .catch(function(err) {
+            console.log(err) // error object
+        })
+
 }
 
 $('#change-doctor-save').click(function() {
@@ -401,7 +445,7 @@ $('#change-doctor-save').click(function() {
     _:personalDoctor <${newDoctorUri}>`;
 
     if (specialists) {
-        content += `\n\t_:specialist ${specialists}`
+        content += `;\n\t_:specialist ${specialists}.`
     } else {
         content += '.\n';
     }
@@ -421,5 +465,21 @@ $('#change-doctor-save').click(function() {
         .catch(function(err) {
             console.log(err) // error object
         })
+});
 
+$('#add-specialist').click(function() {
+    $(this).before(
+        `<li class="list-group-item list-group-item-new">
+            <input type="text" class="acl-webId form-control">
+            <span class="float-right">
+                <label>R</label>
+                <input type="checkbox" name="acl-read">
+                <label>W</label>
+                <input type="checkbox" name="acl-write">
+                <label>A</label>
+                <input type="checkbox" name="acl-append">
+            </span>
+        </li>`
+    );
+    $(this).blur();
 });

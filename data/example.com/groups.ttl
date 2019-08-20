@@ -12,7 +12,9 @@
     # Doctor group members:
     vcard:hasMember  <https://lukatavcer.example.com:8443/profile/card#me>;
     vcard:hasMember  <https://doctor.example.com:8443/profile/card#me>;
-    vcard:hasMember  <https://doctor2.example.com:8443/profile/card#me>.
+    vcard:hasMember  <https://doctor2.example.com:8443/profile/card#me>;
+    vcard:hasMember  <https://specialist.example.com:8443/profile/card#me>;
+    vcard:hasMember  <https://specialist2.example.com:8443/profile/card#me>.
 
 <#Patient>
     a                vcard:Group;

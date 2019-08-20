@@ -16,6 +16,9 @@ solid.auth.trackSession(async function(session) {
         // Load patient's health records
         await loadRecords();
 
+        // Load patient's rights
+        await loadRights();
+
         // Use the user's WebID as default profile
         const $profile = $('#profile');
         if (!$profile.val()) {
@@ -183,6 +186,207 @@ $('#edit-record').click(async function() {
         alert("Nekaj je šlo narobe. " + err);
         console.log(err);
     });
+});
 
+async function loadRights() {
+    const $rightsLoader = $('#rights-loader');
+    $rightsLoader.show();
+    const healthUrl = LoggedUser.storage + 'health/';
+    const healthProfileUrl = healthUrl + 'profile.ttl';
+    const resource = $rdf.sym(healthProfileUrl);
+
+    const store = $rdf.graph();
+    const fetcher = new $rdf.Fetcher(store);
+    await fetcher.load(healthProfileUrl);
+
+    let personalDoctor = null;
+    let specialists = null;
+
+    // Get all records from patient's data pod
+    await fetchHealthProfile();
+
+    solidClient.getPermissions(healthUrl)
+        .then(function (permissionSet) {
+            if (personalDoctor) {
+                $('#personal-doctor').text(personalDoctor.object.value);
+                $('#current-doctor-uri').val(personalDoctor.object.value);  // On change personal doctor modal
+                let auth = permissionSet.permissionFor(personalDoctor.object.value);
+                let $rights = $('#personal-doctor-rights');
+
+                if (auth.allowsRead()) $rights.find('input[name="acl-read"]').prop('checked', 'checked');
+                if (auth.allowsWrite()) $rights.find('input[name="acl-write"]').prop('checked', 'checked');
+                if (auth.allowsAppend()) $rights.find('input[name="acl-append"]').prop('checked', 'checked');
+            }
+
+            $rightsLoader.hide();
+            $('#rights-wrapper').show();
+
+            const $specialists = $('#specialist-rights');
+            specialists.forEach(function (specialist) {
+                console.log("Specialist: " + specialist.object.value);
+                let auth = permissionSet.permissionFor(specialist.object.value);
+
+                let read, write, append = '';
+                if (auth) {
+                    if (auth.allowsRead()) read = 'checked';
+                    if (auth.allowsWrite()) write = 'checked';
+                    if (auth.allowsAppend()) append = 'checked';
+                }
+
+                $specialists.prepend(
+                    `<li class="list-group-item">
+                        <span class="acl-webId">${specialist.object.value}</span>
+                        <span class="float-right">
+                            <label>R</label>
+                            <input type="checkbox" name="acl-read" ${read}>
+                            <label>W</label>
+                            <input type="checkbox" name="acl-write" ${write}>
+                            <label>A</label>
+                            <input type="checkbox" name="acl-append" ${append}>
+                        </span>
+                    </li>`
+                );
+            });
+
+        });
+
+    async function fetchHealthProfile() {
+        personalDoctor = store.anyStatementMatching(undefined, $rdf.blankNode("personalDoctor"), undefined, resource);
+        specialists = store.match(undefined, $rdf.blankNode("specialist"), undefined, resource);
+    }
+
+}
+
+async function saveRights() {
+    const healthContainer = LoggedUser.storage + 'health/'
+    const healthAcl = healthContainer + '.acl';
+
+    let content =
+        `@prefix  acl:  <http://www.w3.org/ns/auth/acl#>.
+
+# The owner has all of the access modes allowed
+<#owner>
+    a acl:Authorization;
+    acl:agent <${LoggedUser.webId}>;
+    acl:accessTo <./>;
+    acl:default <./>;
+    acl:mode
+        acl:Read, acl:Write, acl:Control.
+
+# Group authorization, giving Read/Write access to members of the Doctor group
+<#authorization>
+    a               acl:Authorization;
+    acl:accessTo    <./>;
+    acl:mode        acl:Read,
+                    acl:Write;
+    acl:default <./>;
+    acl:agentGroup  <https://example.com:8443/groups.ttl#Doctor>.
+
+`;
+
+    // Set personal doctor's rights
+    let $personalDoctorRights = $('#personal-doctor-rights');
+
+    let read = $personalDoctorRights.find('input[name="acl-read"]').prop('checked');
+    let write = $personalDoctorRights.find('input[name="acl-write"]').prop('checked');
+    let append = $personalDoctorRights.find('input[name="acl-append"]').prop('checked');
+    if (read || write || append) {
+        let rights = '';
+        if (read) rights += 'r';
+        if (write) rights += 'w';
+        if (append) rights += 'a';
+
+        content +=
+            `<#personalDoctor>
+    a acl:Authorization;
+    acl:agent <${$('#personal-doctor').text()}>;
+    acl:accessTo <./>;
+    acl:default <./>;
+    acl:mode
+        ${ACL_RIGHTS[rights]}.
+        
+`;
+    }
+
+    let count = 1;
+
+    for (let li of $('#specialist-rights li')) {
+        let $li = $(li);
+        let uri = $li.find('.acl-webId').text();
+
+        let read = $li.find('input[name="acl-read"]').prop('checked');
+        let write = $li.find('input[name="acl-write"]').prop('checked');
+        let append = $li.find('input[name="acl-append"]').prop('checked');
+        if (!read && !write && !append)
+            continue;
+
+        let rights = '';
+        if (read) rights += 'r';
+        if (write) rights += 'w';
+        if (append) rights += 'a';
+
+        content +=
+            `<#specialist${count}>
+    a acl:Authorization;
+    acl:agent <${uri}>;
+    acl:accessTo <./>;
+    acl:default <./>;
+    acl:mode
+        ${ACL_RIGHTS[rights]}.
+        
+`;
+
+        count++;
+
+    }
+    await solidClient.web.put(healthAcl, content).then(function (meta) {
+        $('#save-rights-success').show();
+        return meta.url;
+    }).catch(function (err) {
+        alert("Nekaj je šlo narobe. " + err);
+        console.log(err);
+    });
+}
+
+$('#change-doctor-save').click(function() {
+    let newDoctorUri = $('#current-doctor-uri').val();
+
+    if (!newDoctorUri)
+        alert("Vrednost za novega zdravnika ne more biti prazna.");
+
+    let url = LoggedUser.storage + 'health/profile.ttl';
+    let specialists = '';
+    let list = $('#specialist-rights li');
+
+    for (let i=0; i<list.length; i++) {
+        specialists += `<${$(list[i]).find('.acl-webId').text()}>`
+
+        if (i < list.length-1)
+            specialists += ',\n\t\t\t\t ';
+    }
+
+    let content =
+        `@prefix : <#>.
+
+:me
+    _:personalDoctor <${newDoctorUri}>;
+    _:specialist ${specialists}.
+
+`;
+    solidClient.web.put(url, content)
+        .then(async function (response){
+            $('#personal-doctor').text(newDoctorUri);
+            let $doctor = $('#personal-doctor-rights');
+            $doctor.find('input[name="acl-read"]').prop('checked', 'checked');
+            $doctor.find('input[name="acl-write"]').prop('checked', 'checked');
+            $doctor.find('input[name="acl-append"]').prop('checked', 'checked');
+
+            await saveRights();
+
+            $('#change-doctor-modal').modal('hide');
+        })
+        .catch(function(err) {
+            console.log(err) // error object
+        })
 
 });

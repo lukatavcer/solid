@@ -182,8 +182,12 @@ p.lead {
   width: 100%;
 }
 
-.alert.alert-danger {
+.alert {
   padding: 7px 15px;
+}
+
+.alert-dismissible .close{
+  right: 0 !important;
 }
 
 .float-left {
@@ -192,4 +196,19 @@ p.lead {
 
 .float-right {
   float: right;
+}
+
+.media {
+  padding: 5px;
+}
+
+#records .media:hover {
+  cursor: pointer;
+  background-color: #fff;
+  -webkit-filter:  grayscale(100%) brightness(85%);
+  /*margin: 5px -5px;*/
+}
+
+.text-center {
+  text-align: center !important;
 }

@@ -10,10 +10,18 @@
         acl:Read, acl:Write, acl:Control.
 
 # Group authorization, giving Read/Write access to members of the Doctor group
-<#authorization2>
+<#authorization>
     a               acl:Authorization;
     acl:accessTo    <./>;
     acl:mode        acl:Read,
                     acl:Write;
     acl:default <./>;
     acl:agentGroup  <https://example.com:8443/groups.ttl#Doctor>.
+
+<#personalDoctor>
+    a acl:Authorization;
+    acl:agent <https://doctor.example.com:8443/profile/card#me>;
+    acl:accessTo <./>;
+    acl:default <./>;
+    acl:mode
+        acl:Read, acl:Write, acl:Append.
